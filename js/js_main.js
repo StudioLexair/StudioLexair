@@ -12,40 +12,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Mostrar loading screen
     showLoadingScreen();
 
-    // Inicializar clientes de Supabase
-    await simulateLoading(20, 'Conectando con servidores...');
-    initializeSupabaseClients();
+    try {
+        // 1) Inicializar clientes de Supabase
+        await simulateLoading(20, 'Conectando con servidores...');
+        initializeSupabaseClients();
 
-    // Inicializar autenticación
-    await simulateLoading(40, 'Verificando sesión...');
-    await Auth.init();
+        // 2) Inicializar autenticación
+        await simulateLoading(40, 'Verificando sesión...');
+        await Auth.init();
 
-    // Crear modales dinámicos
-    await simulateLoading(60, 'Preparando interfaz...');
-    UI.createBuyTokensModal();
+        // 3) Crear modales dinámicos
+        await simulateLoading(60, 'Preparando interfaz...');
+        UI.createBuyTokensModal();
 
-    // Configurar event listeners de botones
-    await simulateLoading(80, 'Configurando controles...');
-    setupEventListeners();
+        // 4) Configurar event listeners de botones
+        await simulateLoading(80, 'Configurando controles...');
+        setupEventListeners();
 
-    // Verificar si viene de confirmación de email
-    checkEmailConfirmation();
+        // 5) Verificar si viene de confirmación de email
+        checkEmailConfirmation();
 
-    // Cargar estadísticas
-    await simulateLoading(90, 'Cargando estadísticas...');
-    await Stats.loadAllStats();
-    
-    // Iniciar actualización automática cada 1 minuto
-    // (Puedes aumentar este valor si quieres hacer menos peticiones)
-    Stats.startAutoRefresh(1);
-    
-    // Finalizar carga
-    await simulateLoading(100, '¡Listo!');
-    
-    setTimeout(() => {
-        hideLoadingScreen();
+        // 6) Cargar estadísticas
+        await simulateLoading(90, 'Cargando estadísticas...');
+        await Stats.loadAllStats();
+        
+        // 7) Iniciar actualización automática cada 1 minuto
+        // (Puedes aumentar este valor si quieres hacer menos peticiones)
+        Stats.startAutoRefresh(1);
+        
+        // 8) Finalizar carga (lógica)
+        await simulateLoading(100, '¡Listo!');
         console.log('✅ Launcher inicializado correctamente');
-    }, 500);
+    } catch (error) {
+        console.error('❌ Error durante la inicialización:', error);
+        if (window.UI && typeof UI.showError === 'function') {
+            UI.showError('Error al inicializar la aplicación. Revisa tu conexión o intenta recargar la página.');
+        } else {
+            alert('Error al inicializar la aplicación. Revisa la consola.');
+        }
+    } finally {
+        // Ocultar loading screen SIEMPRE, aunque haya fallos
+        setTimeout(() => {
+            hideLoadingScreen();
+            console.log('🟢 Pantalla de carga oculta');
+        }, 500);
+    }
 });
 
 /**
@@ -121,11 +132,8 @@ function setupEventListeners() {
     });
 
     document.getElementById('ctaExplore')?.addEventListener('click', () => {
-        // Scroll suave a la sección de tienda/guest message
-        const target = document.querySelector('#tabsSection, #guestMessage');
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        // Abrir modal de inicio de sesión al explorar juegos desde la página inicial
+        UI.showModal('loginModal');
     });
 
     // Tabs
