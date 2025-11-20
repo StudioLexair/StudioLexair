@@ -301,84 +301,31 @@ const Store = {
     },
 
     /**
-     * Lanzar un juego en modo launcher (pantalla casi completa)
+     * Lanzar un juego/aplicación usando el motor central LauncherEngine
      */
     launchGame(gameId, gameTitle, gameUrl) {
-        if (!Auth.currentUser) {
-            UI.showError('Debes iniciar sesión para jugar');
+        if (!window.LauncherEngine) {
+            console.warn('⚠️ LauncherEngine no está disponible, usando launcher web por defecto');
+            if (!Auth.currentUser) {
+                UI.showError('Debes iniciar sesión para jugar');
+                return;
+            }
+            // Fallback básico: abrir en iframe con parámetros
+            const uid = encodeURIComponent(Auth.currentUser.id);
+            const email = encodeURIComponent(Auth.currentUser.email || '');
+            const separator = gameUrl.includes('?') ? '&' : '?';
+            const finalUrl = `${gameUrl}${separator}uid=${uid}&email=${email}`;
+            LauncherEngine?.launchWebGame?.(gameTitle, finalUrl);
             return;
         }
 
-        console.log(`🚀 Lanzando juego: ${gameTitle}`);
-
-        // Construir URL con datos del usuario
-        const uid = encodeURIComponent(Auth.currentUser.id);
-        const email = encodeURIComponent(Auth.currentUser.email || '');
-        const separator = gameUrl.includes('?') ? '&' : '?';
-        const finalUrl = `${gameUrl}${separator}uid=${uid}&email=${email}`;
-
-        // Eliminar launcher anterior si existe
-        const existing = document.getElementById('gameLauncherModal');
-        if (existing) existing.remove();
-
-        const modal = document.createElement('div');
-        modal.id = 'gameLauncherModal';
-        modal.className = 'fixed inset-0 z-50 flex flex-col bg-black bg-opacity-95';
-        modal.innerHTML = `
-            <div class="flex items-center justify-between px-4 py-2 bg-gray-900 border-b border-gray-800">
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded flex items-center justify-center">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wide">Jugando</p>
-                        <h3 class="text-sm md:text-base font-semibold text-white line-clamp-1">${gameTitle}</h3>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <p class="hidden md:block text-xs text-gray-500">
-                        Presiona <span class="border border-gray-600 rounded px-1">ESC</span> para salir
-                    </p>
-                    <button id="closeGameLauncherBtn" class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white text-xs font-semibold flex items-center space-x-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                        <span>Cerrar</span>
-                    </button>
-                </div>
-            </div>
-            <div class="flex-1 relative bg-black">
-                <div class="absolute inset-0 flex items-center justify-center z-0" id="gameLoader">
-                    <div class="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-                <iframe 
-                    src="${finalUrl}" 
-                    class="relative z-10 w-full h-full border-none" 
-                    allowfullscreen="true"
-                    allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"
-                    onload="document.getElementById('gameLoader')?.remove()"
-                ></iframe>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        const close = () => {
-            const m = document.getElementById('gameLauncherModal');
-            if (m) m.remove();
-            document.removeEventListener('keydown', escHandler);
+        const item = {
+            id: gameId,
+            title: gameTitle,
+            game_url: gameUrl
         };
 
-        const escHandler = (e) => {
-            if (e.key === 'Escape') {
-                close();
-            }
-        };
-
-        document.getElementById('closeGameLauncherBtn')?.addEventListener('click', close);
-        document.addEventListener('keydown', escHandler);
+        LauncherEngine.launch(item);
     }
 };
 
