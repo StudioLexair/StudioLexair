@@ -50,11 +50,30 @@ const UI = {
      * Mostrar sección y ocultar otras
      */
     showSection(sectionId) {
-        // Ocultar todas las secciones
-        document.getElementById('guestMessage')?.classList.add('hidden');
-        document.getElementById('storeSection')?.classList.add('hidden');
-        document.getElementById('librarySection')?.classList.add('hidden');
-        document.getElementById('tabsSection')?.classList.add('hidden');
+        // Ocultar todas las secciones principales
+        const sections = [
+            'guestMessage',
+            'storeSection',
+            'librarySection',
+            'dashboardSection',
+            'profileSection',
+            'tokensSection',
+            'eventsSection'
+        ];
+        sections.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+
+        // Tabs solo visibles en tienda / biblioteca
+        const tabs = document.getElementById('tabsSection');
+        if (tabs) {
+            if (sectionId === 'storeSection' || sectionId === 'librarySection') {
+                tabs.classList.remove('hidden');
+            } else {
+                tabs.classList.add('hidden');
+            }
+        }
 
         // Mostrar la sección solicitada
         const section = document.getElementById(sectionId);
@@ -196,14 +215,14 @@ const UI = {
         // Ocultar botones de auth
         document.getElementById('authButtons')?.classList.add('hidden');
 
-        // Mostrar sección de usuario
+        // Mostrar sección de usuario en navbar
         const userSection = document.getElementById('userSection');
         if (userSection) {
             userSection.classList.remove('hidden');
             userSection.classList.add('flex');
         }
 
-        // Actualizar email y tokens
+        // Actualizar email y tokens (navbar)
         const userEmail = document.getElementById('userEmail');
         const userTokens = document.getElementById('userTokens');
         const userInitial = document.getElementById('userInitial');
@@ -218,15 +237,13 @@ const UI = {
             heroSection.classList.add('hidden');
         }
 
-        // Mostrar tienda
-        document.getElementById('tabsSection')?.classList.remove('hidden');
-        this.showSection('storeSection');
-        this.switchTab('store');
+        // Mostrar panel principal como pantalla inicial del launcher
+        this.showSection('dashboardSection');
 
-        // Hacer scroll a la tienda para que parezca un dashboard
-        const storeSection = document.getElementById('storeSection');
-        if (storeSection) {
-            storeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Hacer scroll al inicio del main
+        const main = document.querySelector('main');
+        if (main) {
+            main.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     },
 
