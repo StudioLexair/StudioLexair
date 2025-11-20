@@ -27,6 +27,12 @@ body {
     font-family: 'Orbitron', sans-serif;
 }
 
+/* Marca compacta en el navbar para todos los dispositivos */
+nav .logo-font {
+    font-size: 1.25rem !important;
+    line-height: 1.2;
+}
+
 /* Game Cards */
 .game-card {
     transition: all 0.3s ease;
@@ -447,9 +453,11 @@ select:focus {
     }
 
     /* Hero Section Mobile */
-    .logo-font {
+    #heroSection .logo-font {
         font-size: 2.5rem !important;
     }
+
+    /* Navbar brand en móvil (ya ajustada globalmente, se mantiene por compatibilidad) */
 
     /* Ajustar tamaño de texto en móvil */
     h1.text-6xl {
