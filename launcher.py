@@ -25,7 +25,6 @@ def main():
     """Punto de entrada de la herramienta de escritorio de Studio Lexair."""
 
     # HTML embebido para la ventana principal (herramienta)
-    # Aquí no se carga la tienda, solo información y el botón para abrir el launcher.
     html_tool = f"""<!DOCTYPE html>
 <html lang='es'>
 <head>
@@ -185,6 +184,8 @@ def main():
 </html>
 """
 
+    api = Api()
+
     # Crear la ventana principal de la herramienta
     window = webview.create_window(
         title="Studio Lexair - Herramienta de Escritorio",
@@ -193,12 +194,11 @@ def main():
         height=420,
         resizable=False,
         zoomable=False,
+        js_api=api,   # 👈 API expuesta al HTML
     )
 
-    api = Api()
-
-    # Iniciar el loop de la app con la API expuesta a JS
-    webview.start(gui=None, http_server=False, debug=False, func=None, api=api)
+    # Iniciar el loop de la app
+    webview.start()
 
 
 if __name__ == "__main__":
