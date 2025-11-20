@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Lexair - Game Launcher</title>
+    <title>Studio Lexair Launcher - Juegos, Apps y Herramientas</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/css_styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="antialiased">
 
@@ -40,7 +40,8 @@
                 </div>
                 
                 <!-- User Section (Logged In) -->
-                <div id="userSection" class="hidden items-center space-x-4">
+                <div id="userSection" class="hidden items-center space-x-3">
+                    <!-- Badge de tokens (visible en todas las resoluciones) -->
                     <div class="coin-badge px-4 py-2 rounded-full text-white font-bold flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
@@ -49,17 +50,31 @@
                         <span id="userTokens">0</span>
                         <span class="text-xs opacity-80">TOKENS</span>
                     </div>
-                    <button id="btnBuyTokens" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition">
+
+                    <!-- Botón comprar tokens: solo escritorio/tablet (oculto en navbar) -->
+                    <button id="btnBuyTokens" class="hidden bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition">
                         Comprar Tokens
                     </button>
-                    <div class="flex items-center space-x-2">
+
+                    <!-- Email + avatar: se muestra ahora solo en el panel lateral, no en el navbar -->
+                    <div class="hidden items-center space-x-2">
                         <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
                             <span id="userInitial" class="text-white font-bold text-sm"></span>
                         </div>
                         <span id="userEmail" class="text-white text-sm"></span>
                     </div>
-                    <button id="btnLogout" class="text-red-400 hover:text-red-300 transition">
+
+                    <!-- Botón salir: se muestra ahora solo en el panel lateral, no en el navbar -->
+                    <button id="btnLogout" class="hidden text-red-400 hover:text-red-300 transition">
                         Salir
+                    </button>
+
+                    <!-- Botón panel usuario (visible en todos los dispositivos) -->
+                    <button id="btnUserDrawer" class="p-2 rounded-lg border border-purple-500 text-purple-300 hover:bg-purple-600/20 transition flex items-center justify-center">
+                        <!-- Icono hamburguesa -->
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
                     </button>
                 </div>
                 
@@ -75,6 +90,79 @@
             </div>
         </div>
     </nav>
+
+    <!-- Panel de usuario (lateral) -->
+    <div id="userDrawer" class="fixed inset-0 z-40 hidden">
+        <!-- Backdrop -->
+        <div id="userDrawerBackdrop" class="absolute inset-0 bg-black bg-opacity-60"></div>
+        <!-- Panel -->
+        <div class="absolute inset-y-0 right-0 w-72 bg-gray-900 border-l border-purple-500 border-opacity-40 shadow-2xl flex flex-col p-5 space-y-4">
+            <!-- Header simple -->
+            <div class="flex items-center justify-between mb-2">
+                <p class="text-xs text-gray-500 uppercase tracking-wide">Menú</p>
+                <button id="btnCloseUserDrawer" class="text-gray-400 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Navegación principal -->
+            <nav class="flex flex-col space-y-2">
+                <button id="navProfile" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
+                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Perfil</span>
+                </button>
+
+                <button id="navDashboard" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
+                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4"/>
+                    </svg>
+                    <span>Panel principal</span>
+                </button>
+
+                <button id="navStore" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
+                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M4 8h16l-1 11H5L4 8zM10 12h4"/>
+                    </svg>
+                    <span>Tienda</span>
+                </button>
+
+                <button id="navLibrary" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
+                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 7H20M4 12h16"/>
+                    </svg>
+                    <span>Biblioteca</span>
+                </button>
+
+                <button id="navEvents" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
+                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Eventos</span>
+                </button>
+
+                <button id="navTokens" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
+                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Tokens</span>
+                </button>
+            </nav>
+
+            <!-- Acciones -->
+            <div class="mt-auto space-y-3">
+                <button id="btnLogoutMobile" class="w-full flex items-center justify-center space-x-2 text-red-400 hover:text-red-300 border border-red-500/40 rounded-lg py-2 text-sm font-semibold transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2v-1m0-8V7a2 2 0 012-2h4a2 2 0 012 2v1"/>
+                    </svg>
+                    <span>Cerrar sesión</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -95,12 +183,12 @@
             
             <!-- Subtítulo -->
             <p class="text-2xl md:text-3xl text-purple-300 mb-4 font-semibold">
-                Tu Plataforma de Juegos Todo-en-Uno
+                Tu Launcher de Juegos, Apps y Herramientas
             </p>
             
             <p class="text-gray-400 text-lg mb-8 max-w-3xl mx-auto">
-                Descubre, compra y juega cientos de juegos increíbles. 
-                Gana tokens, desbloquea contenido exclusivo y únete a una comunidad global de gamers.
+                Descubre, instala y usa juegos, aplicaciones y herramientas increíbles. 
+                Gana tokens, desbloquea contenido exclusivo y únete a una comunidad global de creadores y usuarios.
             </p>
             
             <!-- CTA Buttons -->
@@ -115,7 +203,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
-                    <span>Explorar Juegos</span>
+                    <span>Explorar Contenido</span>
                 </button>
             </div>
             
@@ -130,7 +218,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-2">Acceso Instantáneo</h3>
                     <p class="text-gray-400 text-sm">
-                        Juega en segundos. Sin descargas, sin esperas. Todo directo en tu navegador.
+                        Usa juegos, apps y herramientas en segundos. Sin descargas, sin esperas. Todo directo en tu navegador.
                     </p>
                 </div>
                 
@@ -143,7 +231,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-2">Tokens Gratis</h3>
                     <p class="text-gray-400 text-sm">
-                        Gana tokens jugando y desbloquea juegos premium sin gastar dinero real.
+                        Gana tokens usando el launcher y desbloquea contenido premium sin gastar dinero real.
                     </p>
                 </div>
                 
@@ -156,7 +244,7 @@
                     </div>
                     <h3 class="text-xl font-bold text-white mb-2">100% Seguro</h3>
                     <p class="text-gray-400 text-sm">
-                        Tu información protegida con cifrado de nivel bancario. Juega con confianza.
+                        Tu información protegida con cifrado de nivel bancario. Usa el launcher con total confianza.
                     </p>
                 </div>
             </div>
@@ -179,9 +267,9 @@
             <!-- Header Dashboard -->
             <div class="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
                 <div>
-                    <h3 class="text-2xl font-bold text-white mb-1">Tienda de Juegos</h3>
+                    <h3 class="text-2xl font-bold text-white mb-1">Tienda de Juegos, Apps y Herramientas</h3>
                     <p class="text-gray-400 text-sm max-w-xl">
-                        Explora el catálogo completo, filtra por categoría o encuentra juegos gratis y de pago usando los filtros.
+                        Explora el catálogo completo de juegos, aplicaciones y herramientas. Filtra por categoría o encuentra contenido gratis y de pago usando los filtros.
                     </p>
                 </div>
                 
@@ -194,7 +282,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
                         </span>
-                        <input id="gameSearch" type="text" placeholder="Buscar juegos por nombre..." 
+                        <input id="gameSearch" type="text" placeholder="Buscar por nombre..." 
                                class="w-full pl-10 pr-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-purple-500 focus:ring-0 text-sm" />
                     </div>
 
@@ -209,7 +297,7 @@
             <!-- Filtros rápidos -->
             <div class="mb-6 flex flex-wrap gap-2">
                 <button id="filterAll" class="px-4 py-2 rounded-full text-xs font-semibold bg-purple-600 text-white hover:bg-purple-700 transition filter-pill active">
-                    Todos
+                    Todo
                 </button>
                 <button id="filterFree" class="px-4 py-2 rounded-full text-xs font-semibold bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text-white transition filter-pill">
                     Gratis
@@ -219,7 +307,7 @@
                 </button>
             </div>
 
-            <!-- Grid de Juegos -->
+            <!-- Grid de Juegos / Contenido -->
             <div id="gamesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Games will be loaded here -->
             </div>
@@ -228,10 +316,202 @@
         <!-- Library Section -->
         <div id="librarySection" class="hidden">
             <div class="mb-6">
-                <h3 class="text-2xl font-bold text-white mb-4">Mis Juegos</h3>
+                <h3 class="text-2xl font-bold text-white mb-4">Mi Biblioteca</h3>
             </div>
             <div id="libraryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Owned games will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboardSection" class="hidden">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-white mb-2">Panel Principal</h3>
+                <p class="text-gray-400 text-sm max-w-xl">
+                    Resumen de tu cuenta y accesos rápidos a las secciones principales del launcher.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <button id="dashGoStore" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M4 8h16l-1 11H5L4 8zM10 12h4"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold">Ir a la Tienda</p>
+                        <p class="text-gray-400 text-xs">Explora y consigue nuevo contenido</p>
+                    </div>
+                </button>
+                <button id="dashGoLibrary" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 7H20M4 12h16"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold">Mi Biblioteca</p>
+                        <p class="text-gray-400 text-xs">Revisa y lanza tu contenido</p>
+                    </div>
+                </button>
+                <button id="dashGoTokens" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold">Tokens</p>
+                        <p class="text-gray-400 text-xs">Consulta y recarga tu saldo</p>
+                    </div>
+                </button>
+                <button id="dashGoEvents" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold">Eventos</p>
+                        <p class="text-gray-400 text-xs">Participa y gana recompensas</p>
+                    </div>
+                </button>
+                <button id="dashGoProfile" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold">Perfil</p>
+                        <p class="text-gray-400 text-xs">Datos de tu cuenta y seguridad</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profileSection" class="hidden">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-1">Mi Perfil</h3>
+                    <p class="text-gray-400 text-sm">Gestiona la información de tu cuenta Studio Lexair.</p>
+                </div>
+            </div>
+            <div class="glass-effect rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:space-x-6 mb-6">
+                <div class="flex items-center justify-center mb-4 md:mb-0">
+                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-3xl font-bold text-white" id="profileAvatar">
+                        SL
+                    </div>
+                </div>
+                <div class="flex-1 space-y-2">
+                    <p class="text-sm text-gray-400 uppercase tracking-wide">Correo electrónico</p>
+                    <p class="text-white font-semibold break-all" id="profileEmail">-</p>
+                    <p class="text-sm text-gray-400 uppercase tracking-wide mt-4">Nombre de usuario</p>
+                    <p class="text-white font-semibold" id="profileUsername">-</p>
+                    <p class="text-sm text-gray-400 uppercase tracking-wide mt-4">Nombre completo</p>
+                    <p class="text-white font-semibold" id="profileFullName">-</p>
+                    <p class="text-sm text-gray-400 uppercase tracking-wide mt-4">Fecha de nacimiento</p>
+                    <p class="text-white font-semibold" id="profileBirthdate">-</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tokens Section -->
+        <div id="tokensSection" class="hidden">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-1">Mis Tokens</h3>
+                    <p class="text-gray-400 text-sm max-w-xl">
+                        Los tokens son la moneda virtual de Studio Lexair. Puedes usarlos para desbloquear contenido premium y participar en eventos especiales.
+                    </p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="glass-effect rounded-2xl p-6 flex flex-col items-center justify-center">
+                    <p class="text-sm text-gray-400 uppercase tracking-wide mb-1">Saldo actual</p>
+                    <p class="text-4xl font-black text-yellow-400 mb-1" id="tokensPageAmount">0</p>
+                    <p class="text-xs text-gray-500">TOKENS</p>
+                </div>
+                <div class="glass-effect rounded-2xl p-6 flex flex-col justify-center">
+                    <p class="text-sm text-gray-400 uppercase tracking-wide mb-2">Formas de conseguir tokens</p>
+                    <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
+                        <li>Usando el launcher y completando eventos especiales.</li>
+                        <li>Comprando paquetes de tokens desde esta sección.</li>
+                        <li>Participando en promociones y recompensas diarias (próximamente).</li>
+                    </ul>
+                </div>
+                <div class="glass-effect rounded-2xl p-6 flex flex-col justify-center">
+                    <p class="text-sm text-gray-400 uppercase tracking-wide mb-2">Sugerencias</p>
+                    <p class="text-gray-300 text-sm">
+                        Utiliza tus tokens para desbloquear tu contenido favorito y guarda siempre un pequeño saldo para futuros eventos y recompensas especiales.
+                    </p>
+                </div>
+            </div>
+            <div class="mb-4">
+                <h4 class="text-xl font-bold text-white mb-3">Comprar Tokens</h4>
+                <p class="text-gray-400 text-sm mb-4">Selecciona uno de los paquetes disponibles para recargar tu saldo. Esta compra es simulada, no se realizan cobros reales.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="token-package" onclick="Wallet.buyTokens(100, 1)">
+                    <div class="token-package-content">
+                        <div>
+                            <p class="text-white font-bold text-xl">100 Tokens</p>
+                            <p class="text-gray-400 text-sm">Paquete Básico</p>
+                        </div>
+                        <p class="text-green-400 font-bold text-2xl">$1</p>
+                    </div>
+                </div>
+
+                <div class="token-package" onclick="Wallet.buyTokens(500, 5)">
+                    <div class="token-package-content">
+                        <div>
+                            <p class="text-white font-bold text-xl">500 Tokens</p>
+                            <p class="text-gray-400 text-sm">Paquete Popular</p>
+                        </div>
+                        <p class="text-green-400 font-bold text-2xl">$5</p>
+                    </div>
+                </div>
+
+                <div class="token-package token-package-featured" onclick="Wallet.buyTokens(1000, 10)">
+                    <div class="featured-badge">⭐ Mejor Valor</div>
+                    <div class="token-package-content">
+                        <div>
+                            <p class="text-white font-bold text-xl">1,000 Tokens</p>
+                            <p class="text-purple-400 text-sm">Ahorra 20%</p>
+                        </div>
+                        <p class="text-green-400 font-bold text-2xl">$10</p>
+                    </div>
+                </div>
+
+                <div class="token-package" onclick="Wallet.buyTokens(5000, 50)">
+                    <div class="token-package-content">
+                        <div>
+                            <p class="text-white font-bold text-xl">5,000 Tokens</p>
+                            <p class="text-gray-400 text-sm">Paquete Premium</p>
+                        </div>
+                        <p class="text-green-400 font-bold text-2xl">$50</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Events Section -->
+        <div id="eventsSection" class="hidden">
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-white mb-2">Eventos</h3>
+                <p class="text-gray-400 text-sm max-w-xl">
+                    Participa en eventos temporales para ganar tokens y recompensas especiales. Muy pronto verás aquí los eventos globales activos de Studio Lexair.
+                </p>
+            </div>
+            <div class="glass-effect rounded-2xl p-6 text-center">
+                <svg class="w-12 h-12 text-purple-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                <h4 class="text-xl font-bold text-white mb-2">Próximamente</h4>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto">
+                    Estamos preparando un sistema de eventos globales donde podrás completar misiones, usar contenido destacado y reclamar recompensas limitadas.
+                </p>
             </div>
         </div>
 
@@ -241,7 +521,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
             </svg>
             <h3 class="text-2xl font-bold text-white mb-2">Inicia Sesión para Continuar</h3>
-            <p class="text-gray-400 mb-6">Regístrate o inicia sesión para acceder a la tienda de juegos</p>
+            <p class="text-gray-400 mb-6">Regístrate o inicia sesión para acceder a la tienda del launcher</p>
             <button id="btnGuestRegister" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold text-lg">
                 Comenzar Ahora
             </button>
@@ -268,7 +548,7 @@
                         <div class="text-xs text-gray-400 uppercase tracking-wide text-center">Usuarios Registrados</div>
                     </div>
                     
-                    <!-- Juegos Disponibles -->
+                    <!-- Contenido Disponible -->
                     <div class="glass-effect rounded-xl p-6 transform hover:scale-105 transition-all duration-300">
                         <div class="flex justify-center mb-3">
                             <svg class="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -278,7 +558,7 @@
                         <div class="text-3xl font-bold text-purple-400 mb-1 text-center" id="totalGames">
                             <span class="animate-pulse">---</span>
                         </div>
-                        <div class="text-xs text-gray-400 uppercase tracking-wide text-center">Juegos Disponibles</div>
+                        <div class="text-xs text-gray-400 uppercase tracking-wide text-center">Elementos Disponibles</div>
                     </div>
                     
                     <!-- Tokens en Circulación -->
@@ -314,7 +594,7 @@
                 </div>
             </div>
             <h2 class="text-white text-3xl font-bold logo-font mb-2 animate-pulse">Studio Lexair</h2>
-            <p class="text-purple-300 text-sm">Cargando experiencia de juego...</p>
+            <p class="text-purple-300 text-sm">Cargando experiencia del launcher...</p>
             <div class="mt-6 w-64 h-2 bg-gray-700 rounded-full mx-auto overflow-hidden">
                 <div id="loadingBar" class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style="width: 0%"></div>
             </div>
@@ -328,7 +608,7 @@
         <div id="loginModal" class="modal hidden">
             <div class="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-purple-500 border-opacity-30 glass-effect animate-slide-up">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-white">🔐 Iniciar Sesión</h3>
+                    <h3 class="text-2xl font-bold text-white">Iniciar Sesión</h3>
                     <button onclick="UI.closeModal('loginModal')" class="text-gray-400 hover:text-white transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -372,7 +652,7 @@
         <div id="registerModal" class="modal hidden">
             <div class="bg-gray-900 rounded-2xl p-8 max-w-2xl w-full mx-4 border border-purple-500 border-opacity-30 glass-effect max-h-[90vh] overflow-y-auto animate-slide-up">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-white">🎮 Crear Cuenta</h3>
+                    <h3 class="text-2xl font-bold text-white">Crear Cuenta</h3>
                     <button onclick="UI.closeModal('registerModal')" class="text-gray-400 hover:text-white transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -470,7 +750,7 @@
         <div id="resetPasswordModal" class="modal hidden">
             <div class="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-purple-500 border-opacity-30 glass-effect animate-slide-up">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text-white">🔑 Recuperar Contraseña</h3>
+                    <h3 class="text-2xl font-bold text-white">Recuperar Contraseña</h3>
                     <button onclick="UI.closeModal('resetPasswordModal')" class="text-gray-400 hover:text-white transition">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -508,14 +788,15 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/js_config.js"></script>
-    <script src="js/js_modals.js"></script>
-    <script src="js/js_ui.js"></script>
-    <script src="js/js_auth.js"></script>
-    <script src="js/js_wallet.js"></script>
-    <script src="js/js_store.js"></script>
-    <script src="js/js_stats.js"></script>
-    <script src="js/js_main.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/modals.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/wallet.js"></script>
+    <script src="js/launcherEngine.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/main.js"></script>
 
 </body>
 </html>
