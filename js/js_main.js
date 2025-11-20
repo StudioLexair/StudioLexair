@@ -120,10 +120,125 @@ function setupEventListeners() {
         await Auth.logout();
     });
 
+    // Drawer móvil de usuario
+    const btnUserDrawer = document.getElementById('btnUserDrawer');
+    const userDrawer = document.getElementById('userDrawer');
+    const userDrawerBackdrop = document.getElementById('userDrawerBackdrop');
+    const btnCloseUserDrawer = document.getElementById('btnCloseUserDrawer');
+    const btnLogoutMobile = document.getElementById('btnLogoutMobile');
+    const btnBuyTokensMobile = document.getElementById('btnBuyTokensMobile');
+
+    const openDrawer = () => {
+        if (!userDrawer) return;
+        userDrawer.classList.remove('hidden');
+        userDrawer.classList.add('flex');
+    };
+
+    const closeDrawer = () => {
+        if (!userDrawer) return;
+        userDrawer.classList.add('hidden');
+        userDrawer.classList.remove('flex');
+    };
+
+    btnUserDrawer?.addEventListener('click', openDrawer);
+    userDrawerBackdrop?.addEventListener('click', closeDrawer);
+    btnCloseUserDrawer?.addEventListener('click', closeDrawer);
+
+    btnLogoutMobile?.addEventListener('click', async () => {
+        await Auth.logout();
+        closeDrawer();
+    });
+
+    btnBuyTokensMobile?.addEventListener('click', () => {
+        UI.createBuyTokensModal();
+        UI.showModal('buyTokensModal');
+    });
+
     // Botón de comprar tokens
     document.getElementById('btnBuyTokens')?.addEventListener('click', () => {
         UI.createBuyTokensModal();
         UI.showModal('buyTokensModal');
+    });
+
+    // Navegación del panel lateral (drawer)
+    const navProfile = document.getElementById('navProfile');
+    const navDashboard = document.getElementById('navDashboard');
+    const navStore = document.getElementById('navStore');
+    const navLibrary = document.getElementById('navLibrary');
+    const navEvents = document.getElementById('navEvents');
+    const navTokens = document.getElementById('navTokens');
+
+    const goAndCloseDrawer = (sectionId, extraAction) => {
+        UI.showSection(sectionId);
+        if (typeof extraAction === 'function') extraAction();
+        closeDrawer();
+    };
+
+    navProfile?.addEventListener('click', () => {
+        goAndCloseDrawer('profileSection');
+        syncProfileSection();
+    });
+
+    navDashboard?.addEventListener('click', () => {
+        goAndCloseDrawer('dashboardSection');
+    });
+
+    navStore?.addEventListener('click', () => {
+        goAndCloseDrawer('storeSection', () => UI.switchTab('store'));
+    });
+
+    navLibrary?.addEventListener('click', () => {
+        goAndCloseDrawer('librarySection', () => UI.switchTab('library'));
+    });
+
+    navEvents?.addEventListener('click', () => {
+        goAndCloseDrawer('eventsSection');
+    });
+
+    navTokens?.addEventListener('click', () => {
+        goAndCloseDrawer('tokensSection', () => {
+            // Sincronizar saldo de tokens en la página de tokens
+            const tokensPageAmount = document.getElementById('tokensPageAmount');
+            const navbarTokens = document.getElementById('userTokens');
+            if (tokensPageAmount && navbarTokens) {
+                tokensPageAmount.textContent = navbarTokens.textContent;
+            }
+        });
+    });
+
+    // Accesos rápidos desde el dashboard principal
+    const dashGoStore = document.getElementById('dashGoStore');
+    const dashGoLibrary = document.getElementById('dashGoLibrary');
+    const dashGoTokens = document.getElementById('dashGoTokens');
+    const dashGoEvents = document.getElementById('dashGoEvents');
+    const dashGoProfile = document.getElementById('dashGoProfile');
+
+    dashGoStore?.addEventListener('click', () => {
+        UI.showSection('storeSection');
+        UI.switchTab('store');
+    });
+
+    dashGoLibrary?.addEventListener('click', () => {
+        UI.showSection('librarySection');
+        UI.switchTab('library');
+    });
+
+    dashGoTokens?.addEventListener('click', () => {
+        UI.showSection('tokensSection');
+        const tokensPageAmount = document.getElementById('tokensPageAmount');
+        const navbarTokens = document.getElementById('userTokens');
+        if (tokensPageAmount && navbarTokens) {
+            tokensPageAmount.textContent = navbarTokens.textContent;
+        }
+    });
+
+    dashGoEvents?.addEventListener('click', () => {
+        UI.showSection('eventsSection');
+    });
+
+    dashGoProfile?.addEventListener('click', () => {
+        UI.showSection('profileSection');
+        syncProfileSection();
     });
 
     // CTA Buttons del Hero
@@ -304,5 +419,31 @@ function checkEmailConfirmation() {
 window.showModal = (id) => UI.showModal(id);
 window.closeModal = (id) => UI.closeModal(id);
 window.switchTab = (tab) => UI.switchTab(tab);
+
+/**
+ * Sincronizar sección de perfil con el usuario actual
+ */
+function syncProfileSection() {
+    if (!Auth || !Auth.currentUser) return;
+
+    const user = Auth.currentUser;
+    const emailEl = document.getElementById('profileEmail');
+    const usernameEl = document.getElementById('profileUsername');
+    const fullNameEl = document.getElementById('profileFullName');
+    const birthdateEl = document.getElementById('profileBirthdate');
+    const avatarEl = document.getElementById('profileAvatar');
+
+    if (emailEl) emailEl.textContent = user.email || '-';
+
+    const meta = user.user_metadata || {};
+    if (usernameEl) usernameEl.textContent = meta.username || '-';
+    if (fullNameEl) fullNameEl.textContent = meta.full_name || '-';
+    if (birthdateEl) birthdateEl.textContent = meta.birthdate || '-';
+
+    if (avatarEl) {
+        const initial = (user.email || 'SL').charAt(0).toUpperCase();
+        avatarEl.textContent = initial;
+    }
+}
 
 console.log('📝 Event listeners configurados');
