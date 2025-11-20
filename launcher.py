@@ -1,7 +1,11 @@
 import json
 import os
 import time
+import logging
 import webview
+
+# Silenciar logs ruidosos de pywebview
+logging.getLogger('pywebview').setLevel(logging.ERROR)
 
 LAUNCHER_URL = "https://studiolexair.servegame.com/"
 CONFIG_FILENAME = "launcher_config.json"
@@ -18,16 +22,17 @@ class Api:
 
     Maneja:
       - Configuración (políticas, modo, resolución, idioma)
-      - Abrir launcher web
-      - Cerrar / minimizar la app
+      - Abrir/cerrar launcher web
+      - Cerrar/minimizar la app
       - Temporizador de tiempo en launcher
     """
 
     def __init__(self, config_path):
         self.config_path = config_path
         self.state = self._load_state()
-        self.window = None  # se asigna desde main()
-        self.launch_start_time = None  # para el temporizador
+        self.window = None              # Ventana principal
+        self.launcher_window = None     # Ventana del launcher web
+        self.launch_start_time = None   # Inicio del tiempo del launcher
 
     # ========= Configuración =========
 
@@ -50,14 +55,13 @@ class Api:
     # ========= API para JS =========
 
     def get_initial_state(self):
-        """Estado inicial para JS (políticas, modo, resolución, idioma, tiempo en launcher)."""
+        """Estado inicial para JS (políticas, modo, resolución, idioma)."""
         return {
             "policiesAccepted": bool(self.state.get("policies_accepted", False)),
             "launchMode": self.state.get("launch_mode"),  # fullscreen | window | None
             "windowWidth": int(self.state.get("window_width", 1280)),
             "windowHeight": int(self.state.get("window_height", 720)),
             "language": self.state.get("language", "es"),
-            "elapsedSeconds": 0,
         }
 
     def accept_policies(self):
@@ -114,15 +118,17 @@ class Api:
         return True
 
     def open_launcher(self):
-        """Abrir launcher según el modo/ resolución guardados."""
+        """Abrir launcher según el modo/ resolución guardados y arrancar contador."""
         mode = self.state.get("launch_mode", "fullscreen")
         width = int(self.state.get("window_width", 1280))
         height = int(self.state.get("window_height", 720))
 
-        self.launch_start_time = time.time()
+        # Si ya hay un launcher abierto, no abrir otro
+        if self.launcher_window:
+            return True
 
         if mode == "window":
-            webview.create_window(
+            w = webview.create_window(
                 title="Studio Lexair Launcher",
                 url=LAUNCHER_URL,
                 width=width,
@@ -132,17 +138,45 @@ class Api:
                 confirm_close=True,
             )
         else:
-            webview.create_window(
+            w = webview.create_window(
                 title="Studio Lexair Launcher",
                 url=LAUNCHER_URL,
                 fullscreen=True,
                 zoomable=False,
                 confirm_close=True,
             )
+
+        self.launcher_window = w
+        self.launch_start_time = time.time()
+
+        # Suscribir a evento de cierre para resetear temporizador
+        try:
+            w.events.closed += self._on_launcher_closed
+        except Exception:
+            pass
+
+        return True
+
+    def _on_launcher_closed(self, *args, **kwargs):
+        self.launch_start_time = None
+        self.launcher_window = None
+
+    def close_launcher(self):
+        """Cerrar la ventana del launcher web si está abierta."""
+        if self.launcher_window:
+            try:
+                try:
+                    self.launcher_window.destroy()
+                except Exception:
+                    webview.destroy_window(self.launcher_window)
+            except Exception:
+                pass
+        self.launch_start_time = None
+        self.launcher_window = None
         return True
 
     def get_elapsed_time(self):
-        """Devolver segundos desde que se abrió el launcher (aprox)."""
+        """Devolver segundos desde que se abrió el launcher (o 0 si está cerrado)."""
         if self.launch_start_time is None:
             return 0
         return int(time.time() - self.launch_start_time)
@@ -152,6 +186,7 @@ def main():
     config_path = get_config_path()
     api = Api(config_path)
 
+    # HTML embebido para la herramienta
     html_tool = r"""<!DOCTYPE html>
 <html lang='es'>
 <head>
@@ -234,8 +269,6 @@ def main():
             background: rgba(239, 68, 68, 0.9);
             color: white;
         }
-
-        /* Selector de idioma en titlebar */
         #langSelect {
             -webkit-app-region: no-drag;
             background: rgba(15, 23, 42, 0.9);
@@ -246,12 +279,11 @@ def main():
             font-size: 11px;
         }
 
-        /* Contenedor principal */
+        /* Contenido principal */
         #content {
             flex: 1;
             position: relative;
         }
-
         .screen {
             position: absolute;
             inset: 0;
@@ -290,7 +322,7 @@ def main():
             color: #c4b5fd;
         }
 
-        /* Cards */
+        /* Card */
         .card {
             background: rgba(15, 23, 42, 0.96);
             border-radius: 18px;
@@ -404,21 +436,17 @@ def main():
             font-size: 11px;
             color: #9ca3af;
         }
-
         .tagline {
             font-size: 12px;
             color: #e5e7eb;
             margin-top: 4px;
         }
-
-        /* Dashboard particular */
         .top-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
         }
-
         .elapsed-label {
             font-size: 11px;
             color: #a5b4fc;
@@ -501,12 +529,8 @@ def main():
                 <option value="de">DE</option>
                 <option value="pt">PT</option>
             </select>
-            <button class="titlebar-btn" id="btnMinimize" title="Minimizar">
-                &#8211;
-            </button>
-            <button class="titlebar-btn titlebar-btn-close" id="btnClose" title="Cerrar">
-                &#10005;
-            </button>
+            <button class="titlebar-btn" id="btnMinimize" title="Minimizar">&#8211;</button>
+            <button class="titlebar-btn titlebar-btn-close" id="btnClose" title="Cerrar">&#10005;</button>
         </div>
     </div>
 
@@ -580,9 +604,14 @@ def main():
                     <li data-i18n="dashboardItem2">Usar el mismo sistema de registro e inicio de sesión de la web.</li>
                     <li data-i18n="dashboardItem3">Disfrutar de una experiencia similar a una app nativa.</li>
                 </ul>
-                <button id="btnOpenLauncher" class="button-primary" data-i18n="btnOpenLauncher">
-                    Abrir launcher de tienda
-                </button>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <button id="btnOpenLauncher" class="button-primary" data-i18n="btnOpenLauncher">
+                        Abrir launcher de tienda
+                    </button>
+                    <button id="btnCloseLauncher" class="button-secondary">
+                        Cerrar launcher web
+                    </button>
+                </div>
                 <p class="tagline" data-i18n="dashboardTagline">
                     Todas las funciones avanzadas (tienda, biblioteca, eventos, tokens)
                     se gestionan desde el launcher web.
@@ -639,6 +668,7 @@ def main():
         const btnAcceptPolicies = document.getElementById('btnAcceptPolicies');
         const btnDeclinePolicies = document.getElementById('btnDeclinePolicies');
         const btnOpenLauncher = document.getElementById('btnOpenLauncher');
+        const btnCloseLauncher = document.getElementById('btnCloseLauncher');
         const btnOpenSettings = document.getElementById('btnOpenSettings');
         const btnCloseSettings = document.getElementById('btnCloseSettings');
         const btnSaveSettings = document.getElementById('btnSaveSettings');
@@ -830,7 +860,6 @@ def main():
                 setText(key, dict[key]);
             }
 
-            // Prefijo del label de tiempo
             const prefix = dict['elapsedPrefix'] || translations['es']['elapsedPrefix'];
             if (elapsedLabel) {
                 const current = elapsedLabel.textContent;
@@ -897,7 +926,6 @@ def main():
                 showScreen('loading');
                 const state = await pywebview.api.get_initial_state();
 
-                // Idioma inicial
                 langSelect.value = state.language || 'es';
                 applyLanguage(langSelect.value);
 
@@ -908,13 +936,11 @@ def main():
                         showScreen('policies');
                     }
 
-                    // Modo de lanzamiento
                     const mode = state.launchMode || 'fullscreen';
                     document.querySelectorAll('input[name="launchMode"]').forEach(r => {
                         r.checked = (r.value === mode);
                     });
                     updateResolutionVisibility(mode);
-
                 }, 1000);
             } catch (e) {
                 console.error('Error en init:', e);
@@ -922,7 +948,6 @@ def main():
             }
         }
 
-        // Eventos políticas
         btnAcceptPolicies.addEventListener('click', async () => {
             try {
                 await pywebview.api.accept_policies();
@@ -936,7 +961,6 @@ def main():
             pywebview.api.exit_app();
         });
 
-        // Abrir launcher
         btnOpenLauncher.addEventListener('click', async () => {
             try {
                 const launchInfo = await pywebview.api.get_launch_mode();
@@ -951,7 +975,23 @@ def main():
             }
         });
 
-        // Ajustes
+        btnCloseLauncher.addEventListener('click', async () => {
+            try {
+                await pywebview.api.close_launcher();
+                if (elapsedTimer) {
+                    clearInterval(elapsedTimer);
+                    elapsedTimer = null;
+                }
+                const dict = translations[currentLang] || translations['es'];
+                const prefix = dict['elapsedPrefix'] || translations['es']['elapsedPrefix'];
+                if (elapsedLabel) {
+                    elapsedLabel.textContent = prefix + ' 00:00:00';
+                }
+            } catch (e) {
+                console.error('Error al cerrar launcher:', e);
+            }
+        });
+
         btnOpenSettings.addEventListener('click', () => {
             showSettingsModal();
         });
@@ -973,7 +1013,7 @@ def main():
                 let height = null;
 
                 if (mode === 'window') {
-                    const value = resolutionSelect.value; // "1280x720"
+                    const value = resolutionSelect.value;
                     const parts = value.split('x');
                     width = parseInt(parts[0], 10) || 1280;
                     height = parseInt(parts[1], 10) || 720;
@@ -981,15 +1021,11 @@ def main():
 
                 await pywebview.api.set_launch_mode(mode, width, height);
                 hideSettingsModal();
-
-                await pywebview.api.open_launcher();
-                startElapsedTimer();
             } catch (e) {
                 console.error('Error al guardar ajustes:', e);
             }
         });
 
-        // Botones barra título
         btnMinimize.addEventListener('click', () => {
             pywebview.api.minimize_app();
         });
@@ -997,7 +1033,6 @@ def main():
             pywebview.api.exit_app();
         });
 
-        // Idioma
         langSelect.addEventListener('change', async (e) => {
             const lang = e.target.value;
             applyLanguage(lang);
@@ -1008,9 +1043,7 @@ def main():
             }
         });
 
-        // Iniciar
         document.addEventListener('DOMContentLoaded', init);
-        // Para pywebview puede que DOMContentLoaded ya haya pasado
         init();
     })();
     </script>
@@ -1018,6 +1051,7 @@ def main():
 </html>
 """
 
+    # Crear ventana principal
     window = webview.create_window(
         title="Studio Lexair - Herramienta de Escritorio",
         html=html_tool,
@@ -1025,7 +1059,7 @@ def main():
         height=480,
         resizable=True,
         zoomable=False,
-        frameless=True,  # sin barra del sistema
+        frameless=True,
         js_api=api,
     )
 
