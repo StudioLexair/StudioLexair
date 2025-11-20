@@ -9,7 +9,7 @@ const Auth = {
     currentUser: null,
     currentProject: null,
     pendingVerification: null, // Guarda info del registro pendiente
-
+ 
     /**
      * Inicializar autenticación
      */
