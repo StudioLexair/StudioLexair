@@ -199,4 +199,4 @@ const Stats = {
 };
 
 // Hacer disponible globalmente
-window.Stats = Stats;
+window.Stats = Stats; 
