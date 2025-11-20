@@ -446,4 +446,4 @@ function syncProfileSection() {
     }
 }
 
-console.log('📝 Event listeners configurados');
+console.log('📝 Event listeners configurados'); 
