@@ -475,4 +475,4 @@ const Modals = {
 // Inicializar modales cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     Modals.init();
-}); 
+});  
