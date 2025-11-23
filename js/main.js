@@ -9,6 +9,25 @@
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('🎮 Studio Lexair Launcher iniciando...');
 
+    // Aplicar tema guardado
+    const savedTheme = localStorage.getItem('sl_theme') || 'dark';
+    document.body.classList.remove('theme-dark', 'theme-light', 'theme-neon');
+    if (savedTheme === 'light') document.body.classList.add('theme-light');
+    else if (savedTheme === 'neon') document.body.classList.add('theme-neon');
+    else document.body.classList.add('theme-dark');
+
+    // Ajustar selector de tema si existe
+    const themeSelectInit = document.getElementById('themeSelect');
+    if (themeSelectInit) themeSelectInit.value = savedTheme;
+
+    // Aplicar idioma guardado
+    const savedLang = localStorage.getItem('sl_lang') || 'es';
+    UI.currentLanguage = savedLang;
+    const langSelectInit = document.getElementById('langSelect');
+    if (langSelectInit) langSelectInit.value = savedLang;
+    // Aplicar traducciones iniciales
+    UI.applyTranslations();
+
     // Mostrar loading screen
     showLoadingScreen();
 
@@ -108,6 +127,31 @@ function setupEventListeners() {
         UI.showModal('loginModal');
     });
 
+    // Selectores de idioma y tema
+    const langSelect = document.getElementById('langSelect');
+    const themeSelect = document.getElementById('themeSelect');
+
+    langSelect?.addEventListener('change', (e) => {
+        const lang = e.target.value || 'es';
+        UI.currentLanguage = lang;
+        localStorage.setItem('sl_lang', lang);
+        UI.applyTranslations();
+        UI.showInfo(lang === 'es' ? 'Idioma cambiado a Español' : 'Language changed to English');
+    });
+
+    themeSelect?.addEventListener('change', (e) => {
+        const theme = e.target.value || 'dark';
+        document.body.classList.remove('theme-dark', 'theme-light', 'theme-neon');
+        if (theme === 'light') {
+            document.body.classList.add('theme-light');
+        } else if (theme === 'neon') {
+            document.body.classList.add('theme-neon');
+        } else {
+            document.body.classList.add('theme-dark');
+        }
+        localStorage.setItem('sl_theme', theme);
+    });
+
     document.getElementById('btnShowRegister')?.addEventListener('click', () => {
         UI.showModal('registerModal');
     });
@@ -166,7 +210,9 @@ function setupEventListeners() {
     const navStore = document.getElementById('navStore');
     const navLibrary = document.getElementById('navLibrary');
     const navEvents = document.getElementById('navEvents');
+    const navMissions = document.getElementById('navMissions');
     const navTokens = document.getElementById('navTokens');
+    const navDailyRewards = document.getElementById('navDailyRewards');
 
     const goAndCloseDrawer = (sectionId, extraAction) => {
         UI.showSection(sectionId);
@@ -192,7 +238,19 @@ function setupEventListeners() {
     });
 
     navEvents?.addEventListener('click', () => {
-        goAndCloseDrawer('eventsSection');
+        goAndCloseDrawer('eventsSection', () => {
+            if (window.Events) {
+                Events.renderPage();
+            }
+        });
+    });
+
+    navMissions?.addEventListener('click', () => {
+        goAndCloseDrawer('missionsSection', () => {
+            if (window.Missions) {
+                Missions.renderPage();
+            }
+        });
     });
 
     navTokens?.addEventListener('click', () => {
@@ -206,12 +264,22 @@ function setupEventListeners() {
         });
     });
 
+    navDailyRewards?.addEventListener('click', () => {
+        goAndCloseDrawer('dailyRewardsSection', () => {
+            if (window.DailyRewards) {
+                DailyRewards.renderPage();
+            }
+        });
+    });
+
     // Accesos rápidos desde el dashboard principal
     const dashGoStore = document.getElementById('dashGoStore');
     const dashGoLibrary = document.getElementById('dashGoLibrary');
     const dashGoTokens = document.getElementById('dashGoTokens');
     const dashGoEvents = document.getElementById('dashGoEvents');
     const dashGoProfile = document.getElementById('dashGoProfile');
+    const dashGoMissions = document.getElementById('dashGoMissions');
+    const dashGoDailyRewards = document.getElementById('dashGoDailyRewards');
 
     dashGoStore?.addEventListener('click', () => {
         UI.showSection('storeSection');
@@ -234,6 +302,23 @@ function setupEventListeners() {
 
     dashGoEvents?.addEventListener('click', () => {
         UI.showSection('eventsSection');
+        if (window.Events) {
+            Events.renderPage();
+        }
+    });
+
+    dashGoMissions?.addEventListener('click', () => {
+        UI.showSection('missionsSection');
+        if (window.Missions) {
+            Missions.renderPage();
+        }
+    });
+
+    dashGoDailyRewards?.addEventListener('click', () => {
+        UI.showSection('dailyRewardsSection');
+        if (window.DailyRewards) {
+            DailyRewards.renderPage();
+        }
     });
 
     dashGoProfile?.addEventListener('click', () => {
