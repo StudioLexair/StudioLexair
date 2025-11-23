@@ -1,10 +1,108 @@
-/* =====================================================
-   🎮 STUDIO LEXAIR - STYLES (Modular)
-   by Airien Yolexis Rojas Roque
-   ===================================================== */
+/* Base styles and theme variables */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&display=swap');
 
-/* Este archivo ahora solo agrega los módulos CSS principales */
-@import url('./base.css');
-@import url('./components.css');
-@import url('./animations.css');
-@import url('./responsive.css');
+:root {
+    --color-primary: #667eea;
+    --color-secondary: #764ba2;
+    --color-accent: #f093fb;
+    --color-success: #10b981;
+    --color-error: #ef4444;
+    --color-warning: #f59e0b;
+
+    /* Tema por defecto (oscuro) */
+    --background-main: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
+
+/* Temas */
+body.theme-dark {
+    --background-main: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color-scheme: dark;
+}
+
+body.theme-light {
+    --background-main: linear-gradient(135deg, #f9fafb, #e5e7eb, #d1d5db);
+    color-scheme: light;
+}
+
+body.theme-neon {
+    --background-main: radial-gradient(circle at top, #22c55e 0, #0f172a 40%, #020617 100%);
+    color-scheme: dark;
+}
+
+/* Base */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: var(--background-main);
+    min-height: 100vh;
+}
+
+.logo-font {
+    font-family: 'Orbitron', sans-serif;
+}
+
+/* Navbar title (Studio Lexair) */
+nav .logo-font {
+    font-size: 0.8rem;
+    line-height: 1.1;
+}
+
+@media (max-width: 640px) {
+    nav .logo-font {
+        font-size: 0.7rem;
+        line-height: 1.1;
+    }
+}
+
+/* Accessibility: focus visible */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #fbbf24;
+    outline-offset: 2px;
+}
+
+.onboarding-highlight {
+    outline: 2px solid #22c55e;
+    outline-offset: 3px;
+    border-radius: 0.375rem;
+}
+
+/* Scrollbar Personalizado */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* Utility */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
