@@ -8,6 +8,186 @@
 const UI = {
     captchaValue: 0,
 
+    // Internacionalización simple
+    currentLanguage: 'es',
+    translations: {
+        es: {
+            'nav.store': 'Tienda',
+            'nav.library': 'Mi Biblioteca',
+            'nav.dashboard': 'Panel principal',
+            'nav.events': 'Eventos',
+            'nav.missions': 'Misiones',
+            'nav.tokens': 'Tokens',
+            'nav.dailyRewards': 'Recompensas diarias',
+            'hero.subtitle': 'Tu Launcher de Juegos, Apps y Herramientas',
+            'cta.register': 'Comenzar Gratis',
+            'cta.explore': 'Explorar Contenido',
+            'section.store.title': 'Tienda de Juegos, Apps y Herramientas',
+            'section.library.title': 'Mi Biblioteca',
+            'section.dashboard.title': 'Panel Principal',
+            'section.profile.title': 'Mi Perfil',
+            'section.tokens.title': 'Mis Tokens',
+            'section.events.title': 'Eventos',
+            'section.dailyRewards.title': 'Recompensas diarias',
+            'guest.title': 'Inicia Sesión para Continuar',
+            'guest.subtitle': 'Regístrate o inicia sesión para acceder a la tienda del launcher',
+            // Descripciones largas de secciones
+            'hero.body': 'Descubre, instala y usa juegos, aplicaciones y herramientas increíbles. Gana tokens, desbloquea contenido exclusivo y únete a una comunidad global de creadores y usuarios.',
+            'section.store.desc': 'Explora el catálogo completo de juegos, aplicaciones y herramientas. Filtra por categoría o encuentra contenido gratis y de pago usando los filtros.',
+            'section.dashboard.desc': 'Resumen de tu cuenta y accesos rápidos a las secciones principales del launcher.',
+            'section.profile.desc': 'Gestiona la información de tu cuenta Studio Lexair.',
+            'section.tokens.desc': 'Los tokens son la moneda virtual de Studio Lexair. Puedes usarlos para desbloquear contenido premium y participar en eventos especiales.',
+            'section.events.desc': 'Participa en eventos temporales para ganar tokens y recompensas especiales.',
+            'section.dailyRewards.desc': 'Reclama tu recompensa diaria de inicio de sesión. Mantén tu racha activa para ganar más tokens cada semana.',
+            // Onboarding tips
+            'onboarding.tip.store': 'Tip: Aquí puedes acceder rápidamente a la tienda.',
+            'onboarding.tip.missions': 'Tip: Completa misiones para ganar más tokens.',
+            'onboarding.tip.dailyRewards': 'Tip: Reclama tu recompensa diaria cada vez que inicies sesión.'
+        },
+        en: {
+            'nav.store': 'Store',
+            'nav.library': 'My Library',
+            'nav.dashboard': 'Main Panel',
+            'nav.events': 'Events',
+            'nav.missions': 'Missions',
+            'nav.tokens': 'Tokens',
+            'nav.dailyRewards': 'Daily Rewards',
+            'hero.subtitle': 'Your Games, Apps & Tools Launcher',
+            'cta.register': 'Get Started Free',
+            'cta.explore': 'Explore Content',
+            'section.store.title': 'Store - Games, Apps & Tools',
+            'section.library.title': 'My Library',
+            'section.dashboard.title': 'Main Dashboard',
+            'section.profile.title': 'My Profile',
+            'section.tokens.title': 'My Tokens',
+            'section.events.title': 'Events',
+            'section.dailyRewards.title': 'Daily Rewards',
+            'guest.title': 'Log in to Continue',
+            'guest.subtitle': 'Register or log in to access the launcher store',
+            // Onboarding tips
+            'onboarding.tip.store': 'Tip: Here you can quickly access the store.',
+            'onboarding.tip.missions': 'Tip: Complete missions to earn more tokens.',
+            'onboarding.tip.dailyRewards': 'Tip: Claim your daily reward every time you log in.'
+        }
+    },
+
+    /**
+     * Aplicar traducciones a elementos clave
+     */
+    applyTranslations() {
+        try {
+            const lang = this.currentLanguage || 'es';
+            const dict = this.translations[lang] || this.translations.es;
+
+            const map = [
+                { selector: '#navStore span:last-child', key: 'nav.store' },
+                { selector: '#navLibrary span:last-child', key: 'nav.library' },
+                { selector: '#navDashboard span:last-child', key: 'nav.dashboard' },
+                { selector: '#navEvents span:last-child', key: 'nav.events' },
+                { selector: '#navMissions span:last-child', key: 'nav.missions' },
+                { selector: '#navTokens span:last-child', key: 'nav.tokens' },
+                { selector: '#navDailyRewards span:last-child', key: 'nav.dailyRewards' },
+                { selector: '#ctaRegister span:last-child', key: 'cta.register' },
+                { selector: '#ctaExplore span:last-child', key: 'cta.explore' }
+            ];
+
+            map.forEach(({ selector, key }) => {
+                const el = document.querySelector(selector);
+                if (el && dict[key]) {
+                    el.textContent = dict[key];
+                }
+            });
+
+            // Hero subtitle
+            const heroSubtitle = document.querySelector('#heroSection p.text-2xl');
+            if (heroSubtitle && dict['hero.subtitle']) {
+                heroSubtitle.textContent = dict['hero.subtitle'];
+            }
+            // Hero body
+            const heroBody = document.querySelector('#heroSection p.text-gray-400.text-lg');
+            if (heroBody && dict['hero.body']) {
+                heroBody.textContent = dict['hero.body'];
+            }
+
+            // Guest message
+            const guestTitle = document.querySelector('#guestMessage h3');
+            if (guestTitle && dict['guest.title']) {
+                guestTitle.textContent = dict['guest.title'];
+            }
+            const guestSubtitle = document.querySelector('#guestMessage p.text-gray-400');
+            if (guestSubtitle && dict['guest.subtitle']) {
+                guestSubtitle.textContent = dict['guest.subtitle'];
+            }
+
+            // Section titles
+            const storeTitle = document.querySelector('#storeSection h3');
+            if (storeTitle && dict['section.store.title']) {
+                storeTitle.textContent = dict['section.store.title'];
+            }
+            const libraryTitle = document.querySelector('#librarySection h3');
+            if (libraryTitle && dict['section.library.title']) {
+                libraryTitle.textContent = dict['section.library.title'];
+            }
+            const dashTitle = document.querySelector('#dashboardSection h3');
+            if (dashTitle && dict['section.dashboard.title']) {
+                dashTitle.textContent = dict['section.dashboard.title'];
+            }
+            const profileTitle = document.querySelector('#profileSection h3');
+            if (profileTitle && dict['section.profile.title']) {
+                profileTitle.textContent = dict['section.profile.title'];
+            }
+            const tokensTitle = document.querySelector('#tokensSection h3');
+            if (tokensTitle && dict['section.tokens.title']) {
+                tokensTitle.textContent = dict['section.tokens.title'];
+            }
+            const eventsTitle = document.querySelector('#eventsSection h3');
+            if (eventsTitle && dict['section.events.title']) {
+                eventsTitle.textContent = dict['section.events.title'];
+            }
+            const drTitle = document.querySelector('#dailyRewardsSection h3');
+            if (drTitle && dict['section.dailyRewards.title']) {
+                drTitle.textContent = dict['section.dailyRewards.title'];
+            }
+        } catch (e) {
+            console.error('Error aplicando traducciones:', e);
+        }
+    },
+
+    /**
+     * Onboarding sencillo para primera vez
+     */
+    runOnboarding() {
+        try {
+            if (localStorage.getItem('sl_onboarded') === '1') return;
+            localStorage.setItem('sl_onboarded', '1');
+
+            const highlightSelectors = ['#dashGoStore', '#dashGoMissions', '#dashGoDailyRewards'];
+            highlightSelectors.forEach(sel => {
+                const el = document.querySelector(sel);
+                if (el) el.classList.add('onboarding-highlight');
+            });
+
+            const lang = this.currentLanguage || 'es';
+            const dict = this.translations[lang] || this.translations.es;
+            const tipStore = dict['onboarding.tip.store'];
+            const tipMissions = dict['onboarding.tip.missions'];
+            const tipDaily = dict['onboarding.tip.dailyRewards'];
+
+            if (tipStore) this.showInfo(tipStore);
+            if (tipMissions) setTimeout(() => this.showInfo(tipMissions), 4000);
+            if (tipDaily) setTimeout(() => this.showInfo(tipDaily), 8000);
+
+            setTimeout(() => {
+                highlightSelectors.forEach(sel => {
+                    const el = document.querySelector(sel);
+                    if (el) el.classList.remove('onboarding-highlight');
+                });
+            }, 12000);
+        } catch (e) {
+            console.error('Error en onboarding:', e);
+        }
+    },
+
     /**
      * Mostrar un modal
      */
@@ -58,7 +238,9 @@ const UI = {
             'dashboardSection',
             'profileSection',
             'tokensSection',
-            'eventsSection'
+            'dailyRewardsSection',
+            'eventsSection',
+            'missionsSection'
         ];
         sections.forEach(id => {
             const el = document.getElementById(id);
@@ -245,6 +427,14 @@ const UI = {
         if (main) {
             main.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+
+        // Inicializar recompensas diarias para este usuario
+        if (window.DailyRewards && typeof DailyRewards.onUserLogin === 'function') {
+            DailyRewards.onUserLogin();
+        }
+
+        // Ejecutar onboarding la primera vez
+        this.runOnboarding();
     },
 
     /**
