@@ -14,11 +14,40 @@ const Store = {
     currentPriceFilter: 'all', // all | free | paid
 
     /**
+     * Obtener el cliente Supabase a usar para juegos/compras
+     * - Si el usuario está logueado: usa Auth.currentProject.client
+     * - Si no: intenta usar el primer proyecto definido (para futuro modo público)
+     */
+    getClient() {
+        if (Auth && Auth.currentProject && Auth.currentProject.client) {
+            return Auth.currentProject.client;
+        }
+
+        if (AppConfig.userProjects.length > 0 && AppConfig.userProjects[0].client) {
+            console.warn('⚠️ Usando cliente del primer proyecto para la tienda (usuario no logueado)');
+            return AppConfig.userProjects[0].client;
+        }
+
+        console.error('❌ No hay cliente de Supabase disponible para la tienda');
+        return null;
+    },
+
+    /**
      * Cargar todos los juegos
+     * Ahora se leen desde la tabla games del proyecto actual del usuario
+     * (o del primer proyecto configurado si se habilita modo público).
      */
     async loadGames() {
         try {
-            const { data, error } = await AppConfig.clients.games
+            const client = this.getClient();
+            if (!client) {
+                this.allGames = [];
+                this.filteredGames = [];
+                this.renderGames();
+                return;
+            }
+
+            const { data, error } = await client
                 .from('games')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -121,7 +150,7 @@ const Store = {
                                  <div class="text-gray-500 text-xs">o ${game.price_money}</div>`
                             }
                         </div>
-                        <button onclick="Store.purchaseGame(${game.id}, ${game.price_tokens}, '${game.title}')" 
+                        <button onclick="Store.purchaseGame(${game.id}, ${game.price_tokens}, '${game.title.replace(/'/g, "\\'")}')" 
                                 class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold text-sm transition">
                             ${game.is_free || (game.price_tokens === 0 && Number(game.price_money || 0) === 0) ? 'Obtener' : 'Comprar'}
                         </button>
@@ -141,6 +170,12 @@ const Store = {
                 return;
             }
 
+            const client = this.getClient();
+            if (!client) {
+                UI.showError('No se pudo acceder al proyecto actual para comprar el juego');
+                return;
+            }
+
             // Verificar si ya lo tiene
             const hasGame = this.userGames.some(g => g.game_id === gameId);
             if (hasGame) {
@@ -150,7 +185,7 @@ const Store = {
 
             // Si es gratis, agregar directamente
             if (priceTokens === 0) {
-                await this.addGameToLibrary(gameId, 'free');
+                await this.addGameToLibrary(client, gameId, 'free');
                 UI.showSuccess(`¡${gameTitle} agregado a tu biblioteca!`);
                 await this.loadLibrary();
                 return;
@@ -187,7 +222,7 @@ const Store = {
             }
 
             // Agregar juego
-            await this.addGameToLibrary(gameId, 'tokens');
+            await this.addGameToLibrary(client, gameId, 'tokens');
             UI.showSuccess(`¡${gameTitle} comprado exitosamente!`);
             await this.loadLibrary();
 
@@ -198,10 +233,10 @@ const Store = {
     },
 
     /**
-     * Agregar juego a biblioteca
+     * Agregar juego a biblioteca (en el proyecto actual)
      */
-    async addGameToLibrary(gameId, method) {
-        const { error } = await AppConfig.clients.purchases
+    async addGameToLibrary(client, gameId, method) {
+        const { error } = await client
             .from('user_games')
             .insert({
                 user_id: Auth.currentUser.id,
@@ -213,14 +248,17 @@ const Store = {
     },
 
     /**
-     * Cargar biblioteca del usuario
+     * Cargar biblioteca del usuario (desde user_games y games del proyecto actual)
      */
     async loadLibrary() {
         try {
             if (!Auth.currentUser) return;
 
+            const client = this.getClient();
+            if (!client) return;
+
             // Obtener IDs de juegos comprados
-            const { data: purchases, error } = await AppConfig.clients.purchases
+            const { data: purchases, error } = await client
                 .from('user_games')
                 .select('game_id')
                 .eq('user_id', Auth.currentUser.id);
@@ -235,8 +273,8 @@ const Store = {
                 return;
             }
 
-            // Obtener detalles de los juegos
-            const { data: games, error: gamesError } = await AppConfig.clients.games
+            // Obtener detalles de los juegos del mismo proyecto
+            const { data: games, error: gamesError } = await client
                 .from('games')
                 .select('*')
                 .in('id', gameIds);
@@ -253,6 +291,7 @@ const Store = {
         } catch (error) {
             console.error('Error cargando biblioteca:', error);
             this.userGames = [];
+            this.renderLibrary();
         }
     },
 
@@ -267,7 +306,7 @@ const Store = {
             grid.innerHTML = `
                 <div class="col-span-full text-center py-20">
                     <svg class="w-24 h-24 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414A1 1 0 0114.586 16h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
                     </svg>
                     <h3 class="text-xl font-bold text-white mb-2">Tu biblioteca está vacía</h3>
                     <p class="text-gray-400 mb-6">Compra juegos en la tienda para comenzar</p>
@@ -288,7 +327,7 @@ const Store = {
                     <h3 class="text-xl font-bold text-white mb-2">${game.title}</h3>
                     <p class="text-gray-400 text-sm mb-4 line-clamp-2">${game.description || 'Sin descripción'}</p>
                     
-                    <button onclick="Store.launchGame(${game.id}, '${game.title}', '${game.game_url}')" 
+                    <button onclick="Store.launchGame(${game.id}, '${game.title.replace(/'/g, "\\'")}', '${game.game_url}')" 
                             class="w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg font-semibold transition flex items-center justify-center space-x-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12l5-5v3h4l-5 5v-3H5z" />
@@ -328,9 +367,6 @@ const Store = {
         LauncherEngine.launch(item);
     }
 };
-
-// Hacer disponible globalmente
-window.Store = Store;
 
 // Hacer disponible globalmente
 window.Store = Store;
