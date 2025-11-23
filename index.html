@@ -6,7 +6,7 @@
     <title>Studio Lexair Launcher - Juegos, Apps y Herramientas</title>
     
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -34,58 +34,46 @@
                     <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                         <span class="text-white font-bold text-xl">SL</span>
                     </div>
-                    <h1 class="logo-font text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                        Studio Lexair
+                    <h1 class="logo-font font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 leading-tight">
+                        <span class="block sm:inline">Studio</span>
+                        <span class="block sm:inline sm:ml-1">Lexair</span>
                     </h1>
                 </div>
                 
-                <!-- User Section (Logged In) -->
-                <div id="userSection" class="hidden items-center space-x-3">
-                    <!-- Badge de tokens (visible en todas las resoluciones) -->
-                    <div class="coin-badge px-4 py-2 rounded-full text-white font-bold flex items-center space-x-2">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
-                        </svg>
-                        <span id="userTokens">0</span>
-                        <span class="text-xs opacity-80">TOKENS</span>
+                <div class="flex items-center space-x-3">
+                    <!-- Language selector -->
+                    <select id="langSelect" class="hidden sm:block bg-gray-900 text-gray-200 text-xs rounded-lg px-2 py-1 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                        <option value="es">ES</option>
+                        <option value="en">EN</option>
+                    </select>
+
+                    <!-- Theme selector -->
+                    <select id="themeSelect" class="hidden sm:block bg-gray-900 text-gray-200 text-xs rounded-lg px-2 py-1 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                        <option value="dark">Oscuro</option>
+                        <option value="light">Claro</option>
+                        <option value="neon">Neón</option>
+                    </select>
+
+                    <!-- User Section (Logged In) -->
+                    <div id="userSection" class="hidden flex items-center space-x-3">
+                        <!-- Botón panel usuario (visible en todos los dispositivos) -->
+                        <button id="btnUserDrawer" class="p-2 rounded-lg border border-purple-500 text-purple-300 hover:bg-purple-600/20 transition flex items-center justify-center">
+                            <!-- Icono hamburguesa -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                        </button>
                     </div>
-
-                    <!-- Botón comprar tokens: solo escritorio/tablet (oculto en navbar) -->
-                    <button id="btnBuyTokens" class="hidden bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-semibold transition">
-                        Comprar Tokens
-                    </button>
-
-                    <!-- Email + avatar: se muestra ahora solo en el panel lateral, no en el navbar -->
-                    <div class="hidden items-center space-x-2">
-                        <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
-                            <span id="userInitial" class="text-white font-bold text-sm"></span>
-                        </div>
-                        <span id="userEmail" class="text-white text-sm"></span>
-                    </div>
-
-                    <!-- Botón salir: se muestra ahora solo en el panel lateral, no en el navbar -->
-                    <button id="btnLogout" class="hidden text-red-400 hover:text-red-300 transition">
-                        Salir
-                    </button>
-
-                    <!-- Botón panel usuario (visible en todos los dispositivos) -->
-                    <button id="btnUserDrawer" class="p-2 rounded-lg border border-purple-500 text-purple-300 hover:bg-purple-600/20 transition flex items-center justify-center">
-                        <!-- Icono hamburguesa -->
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                    </button>
-                </div>
                 
-                <!-- Auth Buttons (Logged Out) -->
-                <div id="authButtons" class="flex space-x-3">
-                    <button id="btnShowLogin" class="text-white hover:text-purple-300 px-4 py-2 rounded-lg transition">
-                        Iniciar Sesión
-                    </button>
-                    <button id="btnShowRegister" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
-                        Registrarse
-                    </button>
+                    <!-- Auth Buttons (Logged Out) -->
+                    <div id="authButtons" class="flex space-x-3">
+                        <button id="btnShowLogin" class="text-white hover:text-purple-300 px-4 py-2 rounded-lg transition">
+                            Iniciar Sesión
+                        </button>
+                        <button id="btnShowRegister" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
+                            Registrarse
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -106,6 +94,7 @@
                     </svg>
                 </button>
             </div>
+
 
             <!-- Navegación principal -->
             <nav class="flex flex-col space-y-2">
@@ -144,11 +133,25 @@
                     <span>Eventos</span>
                 </button>
 
+                <button id="navMissions" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
+                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m-6 4v6m4-10v10M5 9h14"/>
+                    </svg>
+                    <span>Misiones</span>
+                </button>
+
                 <button id="navTokens" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
                     <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     <span>Tokens</span>
+                </button>
+
+                <button id="navDailyRewards" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
+                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16 0V9a2 2 0 00-2-2h-3m5 5H4m0 0V9a2 2 0 012-2h3m3-4l2.121 2.121A1.5 1.5 0 0114.5 7.5H9.5A1.5 1.5 0 018.379 5.121L10.5 3m3 0L12 5.5"/>
+                    </svg>
+                    <span>Recompensas diarias</span>
                 </button>
             </nav>
 
@@ -332,6 +335,7 @@
                 </p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Acceso rápido: Tienda -->
                 <button id="dashGoStore" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -343,6 +347,8 @@
                         <p class="text-gray-400 text-xs">Explora y consigue nuevo contenido</p>
                     </div>
                 </button>
+
+                <!-- Acceso rápido: Biblioteca -->
                 <button id="dashGoLibrary" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -354,6 +360,8 @@
                         <p class="text-gray-400 text-xs">Revisa y lanza tu contenido</p>
                     </div>
                 </button>
+
+                <!-- Acceso rápido: Tokens -->
                 <button id="dashGoTokens" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,9 +370,11 @@
                     </div>
                     <div>
                         <p class="text-white font-semibold">Tokens</p>
-                        <p class="text-gray-400 text-xs">Consulta y recarga tu saldo</p>
+                        <p class="text-gray-400 text-xs">Consulta tu saldo y paquetes</p>
                     </div>
                 </button>
+
+                <!-- Acceso rápido: Eventos -->
                 <button id="dashGoEvents" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -376,6 +386,34 @@
                         <p class="text-gray-400 text-xs">Participa y gana recompensas</p>
                     </div>
                 </button>
+
+                <!-- Acceso rápido: Misiones -->
+                <button id="dashGoMissions" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m-6 4v6m4-10v10M5 9h14"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold">Misiones</p>
+                        <p class="text-gray-400 text-xs">Completa retos y gana tokens</p>
+                    </div>
+                </button>
+
+                <!-- Acceso rápido: Recompensas diarias -->
+                <button id="dashGoDailyRewards" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-pink-500 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16 0V9a2 2 0 00-2-2h-3m5 5H4m0 0V9a2 2 0 012-2h3m3-4l2.121 2.121A1.5 1.5 0 0114.5 7.5H9.5A1.5 1.5 0 018.379 5.121L10.5 3m3 0L12 5.5"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold">Recompensas diarias</p>
+                        <p class="text-gray-400 text-xs">Reclama tus tokens de login</p>
+                    </div>
+                </button>
+
+                <!-- Acceso rápido: Perfil -->
                 <button id="dashGoProfile" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -438,7 +476,7 @@
                     <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
                         <li>Usando el launcher y completando eventos especiales.</li>
                         <li>Comprando paquetes de tokens desde esta sección.</li>
-                        <li>Participando en promociones y recompensas diarias (próximamente).</li>
+                        <li>Participando en promociones y recompensas diarias.</li>
                     </ul>
                 </div>
                 <div class="glass-effect rounded-2xl p-6 flex flex-col justify-center">
@@ -492,6 +530,57 @@
                         </div>
                         <p class="text-green-400 font-bold text-2xl">$50</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Rewards Section -->
+        <div id="dailyRewardsSection" class="hidden">
+            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h3 class="text-2xl font-bold text-white mb-1">Recompensas diarias</h3>
+                    <p class="text-gray-400 text-sm max-w-xl">
+                        Reclama tu recompensa diaria de inicio de sesión. Mantén tu racha activa para ganar más tokens cada semana.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Recompensa de hoy -->
+                <div class="glass-effect rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <p class="text-sm text-gray-400 uppercase tracking-wide mb-1">Recompensa de hoy</p>
+                        <p class="text-4xl font-black text-yellow-400 mb-1" id="drTodayAmount">--</p>
+                        <p class="text-xs text-gray-500" id="drTodayLabel">Tokens disponibles hoy</p>
+                    </div>
+                    <div class="mt-4 space-y-2">
+                        <button id="drClaimBtn" onclick="DailyRewards.claimToday()" class="w-full btn-primary text-white py-3 rounded-lg font-semibold">
+                            Reclamar ahora
+                        </button>
+                        <p id="drClaimStatus" class="text-xs text-gray-400"></p>
+                    </div>
+                </div>
+
+                <!-- Racha del jugador -->
+                <div class="glass-effect rounded-2xl p-6 flex flex-col justify-between">
+                    <div>
+                        <p class="text-sm text-gray-400 uppercase tracking-wide mb-1">Tu progreso</p>
+                        <p class="text-lg font-bold text-white" id="drStreakCurrent">Racha actual: 0 días</p>
+                        <p class="text-sm text-gray-400" id="drStreakBest">Mejor racha: 0 días</p>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-xs text-gray-400 mb-1">Tokens ganados por recompensas diarias:</p>
+                        <p class="text-2xl font-black text-green-400" id="drTotalEarned">0</p>
+                    </div>
+                </div>
+
+                <!-- Vista semanal -->
+                <div class="glass-effect rounded-2xl p-6 flex flex-col">
+                    <p class="text-sm text-gray-400 uppercase tracking-wide mb-3">Calendario semanal</p>
+                    <p class="text-xs text-gray-500 mb-3">
+                        Ve las recompensas configuradas para cada día de la semana y el estado de tus reclamaciones.
+                    </p>
+                    <div id="drWeekGrid" class="grid grid-cols-7 gap-2 text-center text-xs"></div>
                 </div>
             </div>
         </div>
@@ -787,6 +876,28 @@
         <!-- Toasts will be inserted here dynamically -->
     </div>
 
+    <!-- Daily Reward Floating Gift: centro (animación inicial) -->
+    <div id="dailyRewardCenter" class="hidden fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
+        <div class="glass-effect rounded-3xl p-6 flex flex-col items-center justify-center bg-purple-900/60 shadow-2xl bounce">
+            <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-pink-500 rounded-2xl flex items-center justify-center mb-3">
+                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16 0V9a2 2 0 00-2-2h-3m5 5H4m0 0V9a2 2 0 012-2h3m3-4l2.121 2.121A1.5 1.5 0 0114.5 7.5H9.5A1.5 1.5 0 018.379 5.121L10.5 3m3 0L12 5.5"/>
+                </svg>
+            </div>
+            <p class="text-white font-semibold text-sm">¡Tienes una recompensa diaria disponible!</p>
+        </div>
+    </div>
+
+    <!-- Daily Reward Floating Gift: botón en esquina inferior izquierda -->
+    <button id="dailyRewardFab" onclick="DailyRewards.openPanel()" class="hidden fixed bottom-5 left-5 z-40 glass-effect rounded-full p-3 flex items-center space-x-2 shadow-lg hover:shadow-2xl transition">
+        <div class="w-9 h-9 bg-gradient-to-br from-yellow-400 to-pink-500 rounded-2xl flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16 0V9a2 2 0 00-2-2h-3m5 5H4m0 0V9a2 2 0 012-2h3m3-4l2.121 2.121A1.5 1.5 0 0114.5 7.5H9.5A1.5 1.5 0 018.379 5.121L10.5 3m3 0L12 5.5"/>
+            </svg>
+        </div>
+        <span class="hidden sm:inline text-xs font-semibold text-white">Recompensa diaria</span>
+    </button>
+
     <!-- Scripts -->
     <script src="js/config.js"></script>
     <script src="js/modals.js"></script>
@@ -795,8 +906,18 @@
     <script src="js/wallet.js"></script>
     <script src="js/launcherEngine.js"></script>
     <script src="js/store.js"></script>
+    <script src="js/dailyRewards.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/missions.js"></script>
     <script src="js/stats.js"></script>
     <script src="js/main.js"></script>
+
+    <!-- Inline base script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('Studio Lexair Launcher base HTML cargado');
+      });
+    </script>
 
 </body>
 </html>
