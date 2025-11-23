@@ -104,4 +104,4 @@ const Wallet = {
 };
 
 // Hacer disponible globalmente
-window.Wallet = Wallet;
+window.Wallet = Wallet; 
