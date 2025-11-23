@@ -193,4 +193,4 @@ const LauncherEngine = {
 };
 
 // Exponer globalmente
-window.LauncherEngine = LauncherEngine;
+window.LauncherEngine = LauncherEngine; 
