@@ -69,10 +69,10 @@ const Stats = {
         try {
             console.log('📊 Cargando estadísticas globales...');
             
-            // Obtener estadísticas de los 4 proyectos de usuarios
+            // Usuarios + tokens (agregado sobre todos los proyectos 1..N)
             const userStats = await this.getUserStats();
             
-            // Obtener estadísticas de juegos
+            // Juegos (agregado sobre todos los proyectos 1..N usando get_games_stats())
             const gameStats = await this.getGameStats();
             
             // Actualizar UI con animación
@@ -85,7 +85,7 @@ const Stats = {
     },
     
     /**
-     * Obtener estadísticas de usuarios de los 4 proyectos
+     * Obtener estadísticas de usuarios de los proyectos
      * Usa la función SQL get_project_stats() para evitar problemas de RLS
      * y obtener siempre el total de usuarios y tokens, incluso sin sesión.
      */
@@ -127,15 +127,36 @@ const Stats = {
     
     /**
      * Obtener estadísticas de juegos
+     * Nuevo: usa la función SQL get_games_stats() en CADA proyecto
+     * y suma total_games para mostrar el total global.
      */
     async getGameStats() {
         try {
-            const { count } = await AppConfig.clients.games
-                .from('games')
-                .select('*', { count: 'exact', head: true });
+            let totalGames = 0;
+
+            for (const project of AppConfig.userProjects) {
+                try {
+                    console.log(`🎮 Consultando get_games_stats() en ${project.name}...`);
+
+                    const { data, error } = await project.client.rpc('get_games_stats');
+
+                    if (error) {
+                        console.warn(`⚠️ Error en get_games_stats() de ${project.name}:`, error);
+                        continue;
+                    }
+
+                    if (data && data.length > 0) {
+                        const stats = data[0];
+                        const gamesCount = parseInt(stats.total_games) || 0;
+                        totalGames += gamesCount;
+                    }
+                } catch (error) {
+                    console.warn(`⚠️ Error en ${project.name} (games):`, error);
+                }
+            }
             
             return {
-                totalGames: count || 0
+                totalGames
             };
         } catch (error) {
             console.error('Error obteniendo juegos:', error);
