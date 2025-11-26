@@ -346,4 +346,4 @@ const DailyRewards = {
 };
 
 // Exponer globalmente
-window.DailyRewards = DailyRewards;
+window.DailyRewards = DailyRewards; 
