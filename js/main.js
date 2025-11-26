@@ -20,14 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const themeSelectInit = document.getElementById('themeSelect');
     if (themeSelectInit) themeSelectInit.value = savedTheme;
 
-    // Aplicar idioma guardado
-    const savedLang = localStorage.getItem('sl_lang') || 'es';
-    UI.currentLanguage = savedLang;
-    const langSelectInit = document.getElementById('langSelect');
-    if (langSelectInit) langSelectInit.value = savedLang;
-    // Aplicar traducciones iniciales
-    UI.applyTranslations();
-
     // Mostrar loading screen
     showLoadingScreen();
 
@@ -56,7 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         await Stats.loadAllStats();
         
         // 7) Iniciar actualización automática cada 1 minuto
-        // (Puedes aumentar este valor si quieres hacer menos peticiones)
         Stats.startAutoRefresh(1);
         
         // 8) Finalizar carga (lógica)
@@ -127,17 +118,8 @@ function setupEventListeners() {
         UI.showModal('loginModal');
     });
 
-    // Selectores de idioma y tema
-    const langSelect = document.getElementById('langSelect');
+    // Selector de tema
     const themeSelect = document.getElementById('themeSelect');
-
-    langSelect?.addEventListener('change', (e) => {
-        const lang = e.target.value || 'es';
-        UI.currentLanguage = lang;
-        localStorage.setItem('sl_lang', lang);
-        UI.applyTranslations();
-        UI.showInfo(lang === 'es' ? 'Idioma cambiado a Español' : 'Language changed to English');
-    });
 
     themeSelect?.addEventListener('change', (e) => {
         const theme = e.target.value || 'dark';
@@ -345,6 +327,14 @@ function setupEventListeners() {
         UI.switchTab('library');
     });
 
+    // Botón "Cargar más" en la tienda
+    const btnStoreLoadMore = document.getElementById('btnStoreLoadMore');
+    if (btnStoreLoadMore) {
+        btnStoreLoadMore.addEventListener('click', () => {
+            Store.loadMoreGames();
+        });
+    }
+
     // Filtros de tienda
     const searchInput = document.getElementById('gameSearch');
     if (searchInput) {
@@ -365,6 +355,7 @@ function setupEventListeners() {
     const filterAll = document.getElementById('filterAll');
     const filterFree = document.getElementById('filterFree');
     const filterPaid = document.getElementById('filterPaid');
+    const filterFavorites = document.getElementById('filterFavorites');
 
     const updateFilterPills = (activeId) => {
         [filterAll, filterFree, filterPaid].forEach(btn => {
@@ -394,6 +385,19 @@ function setupEventListeners() {
     filterPaid?.addEventListener('click', () => {
         Store.currentPriceFilter = 'paid';
         updateFilterPills('filterPaid');
+        Store.applyFilters();
+    });
+
+    // Filtro de favoritos (toggle independiente)
+    filterFavorites?.addEventListener('click', () => {
+        Store.currentFavoritesOnly = !Store.currentFavoritesOnly;
+        if (Store.currentFavoritesOnly) {
+            filterFavorites.classList.add('bg-yellow-500', 'text-black');
+            filterFavorites.classList.remove('bg-gray-800', 'text-gray-300');
+        } else {
+            filterFavorites.classList.remove('bg-yellow-500', 'text-black');
+            filterFavorites.classList.add('bg-gray-800', 'text-gray-300');
+        }
         Store.applyFilters();
     });
 
@@ -430,8 +434,8 @@ function setupEventListeners() {
                 password: document.getElementById('regPassword')?.value,
                 birthdate: document.getElementById('regBirthdate')?.value,
                 newsletter: document.getElementById('regNewsletter')?.checked || false,
-                terms: document.getElementById('regTerms')?.checked || false,  // ✅ AGREGADO
-                website: document.getElementById('regWebsite')?.value || ''     // ✅ Honeypot
+                terms: document.getElementById('regTerms')?.checked || false,
+                website: document.getElementById('regWebsite')?.value || ''     // Honeypot
             };
 
             console.log('📋 Datos del formulario:', {
@@ -464,10 +468,68 @@ function setupEventListeners() {
         }
     });
 
-    // Cerrar modales con ESC
+    // Teclas globales (ESC para cerrar modales, atajos de navegación)
     document.addEventListener('keydown', (e) => {
+        // ESC: cerrar modales
         if (e.key === 'Escape') {
             UI.closeAllModals();
+            return;
+        }
+
+        // No interferir mientras se escribe en inputs/textarea
+        const tag = (e.target.tagName || '').toLowerCase();
+        if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) {
+            return;
+        }
+
+        // Atajos solo para usuarios logueados
+        if (!Auth || !Auth.currentUser) return;
+
+        const key = e.key.toLowerCase();
+        switch (key) {
+            case 's': // Tienda
+                UI.showSection('storeSection');
+                UI.switchTab('store');
+                break;
+            case 'l': // Biblioteca
+                UI.showSection('librarySection');
+                UI.switchTab('library');
+                break;
+            case 'd': // Dashboard
+                UI.showSection('dashboardSection');
+                break;
+            case 'm': // Misiones
+                UI.showSection('missionsSection');
+                if (window.Missions) {
+                    Missions.renderPage();
+                }
+                break;
+            case 't': // Tokens
+                UI.showSection('tokensSection');
+                const tokensPageAmount = document.getElementById('tokensPageAmount');
+                const navbarTokens = document.getElementById('userTokens');
+                if (tokensPageAmount && navbarTokens) {
+                    tokensPageAmount.textContent = navbarTokens.textContent;
+                }
+                break;
+            case 'e': // Eventos
+                UI.showSection('eventsSection');
+                if (window.Events) {
+                    Events.renderPage();
+                }
+                break;
+            case 'r': // Recompensas diarias
+                UI.showSection('dailyRewardsSection');
+                if (window.DailyRewards) {
+                    DailyRewards.renderPage();
+                }
+                break;
+            case 'f': // Foco en buscador de la tienda
+                e.preventDefault();
+                document.getElementById('gameSearch')?.focus();
+                break;
+            default:
+                break;
         }
     });
 }
@@ -531,4 +593,4 @@ function syncProfileSection() {
     }
 }
 
-console.log('📝 Event listeners configurados'); 
+console.log('📝 Event listeners configurados');
