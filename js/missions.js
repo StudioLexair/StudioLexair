@@ -122,4 +122,4 @@ const Missions = {
     }
 };
 
-window.Missions = Missions;
+window.Missions = Missions; 
