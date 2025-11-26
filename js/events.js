@@ -98,4 +98,4 @@ const Events = {
     }
 };
 
-window.Events = Events;
+window.Events = Events; 
