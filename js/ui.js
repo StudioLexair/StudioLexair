@@ -8,153 +8,25 @@
 const UI = {
     captchaValue: 0,
 
-    // Internacionalización simple
+    // Idioma base (solo español en el contenido)
     currentLanguage: 'es',
-    translations: {
-        es: {
-            'nav.store': 'Tienda',
-            'nav.library': 'Mi Biblioteca',
-            'nav.dashboard': 'Panel principal',
-            'nav.events': 'Eventos',
-            'nav.missions': 'Misiones',
-            'nav.tokens': 'Tokens',
-            'nav.dailyRewards': 'Recompensas diarias',
-            'hero.subtitle': 'Tu Launcher de Juegos, Apps y Herramientas',
-            'cta.register': 'Comenzar Gratis',
-            'cta.explore': 'Explorar Contenido',
-            'section.store.title': 'Tienda de Juegos, Apps y Herramientas',
-            'section.library.title': 'Mi Biblioteca',
-            'section.dashboard.title': 'Panel Principal',
-            'section.profile.title': 'Mi Perfil',
-            'section.tokens.title': 'Mis Tokens',
-            'section.events.title': 'Eventos',
-            'section.dailyRewards.title': 'Recompensas diarias',
-            'guest.title': 'Inicia Sesión para Continuar',
-            'guest.subtitle': 'Regístrate o inicia sesión para acceder a la tienda del launcher',
-            // Descripciones largas de secciones
-            'hero.body': 'Descubre, instala y usa juegos, aplicaciones y herramientas increíbles. Gana tokens, desbloquea contenido exclusivo y únete a una comunidad global de creadores y usuarios.',
-            'section.store.desc': 'Explora el catálogo completo de juegos, aplicaciones y herramientas. Filtra por categoría o encuentra contenido gratis y de pago usando los filtros.',
-            'section.dashboard.desc': 'Resumen de tu cuenta y accesos rápidos a las secciones principales del launcher.',
-            'section.profile.desc': 'Gestiona la información de tu cuenta Studio Lexair.',
-            'section.tokens.desc': 'Los tokens son la moneda virtual de Studio Lexair. Puedes usarlos para desbloquear contenido premium y participar en eventos especiales.',
-            'section.events.desc': 'Participa en eventos temporales para ganar tokens y recompensas especiales.',
-            'section.dailyRewards.desc': 'Reclama tu recompensa diaria de inicio de sesión. Mantén tu racha activa para ganar más tokens cada semana.',
-            // Onboarding tips
-            'onboarding.tip.store': 'Tip: Aquí puedes acceder rápidamente a la tienda.',
-            'onboarding.tip.missions': 'Tip: Completa misiones para ganar más tokens.',
-            'onboarding.tip.dailyRewards': 'Tip: Reclama tu recompensa diaria cada vez que inicies sesión.'
-        },
-        en: {
-            'nav.store': 'Store',
-            'nav.library': 'My Library',
-            'nav.dashboard': 'Main Panel',
-            'nav.events': 'Events',
-            'nav.missions': 'Missions',
-            'nav.tokens': 'Tokens',
-            'nav.dailyRewards': 'Daily Rewards',
-            'hero.subtitle': 'Your Games, Apps & Tools Launcher',
-            'cta.register': 'Get Started Free',
-            'cta.explore': 'Explore Content',
-            'section.store.title': 'Store - Games, Apps & Tools',
-            'section.library.title': 'My Library',
-            'section.dashboard.title': 'Main Dashboard',
-            'section.profile.title': 'My Profile',
-            'section.tokens.title': 'My Tokens',
-            'section.events.title': 'Events',
-            'section.dailyRewards.title': 'Daily Rewards',
-            'guest.title': 'Log in to Continue',
-            'guest.subtitle': 'Register or log in to access the launcher store',
-            // Onboarding tips
-            'onboarding.tip.store': 'Tip: Here you can quickly access the store.',
-            'onboarding.tip.missions': 'Tip: Complete missions to earn more tokens.',
-            'onboarding.tip.dailyRewards': 'Tip: Claim your daily reward every time you log in.'
-        }
-    },
 
     /**
-     * Aplicar traducciones a elementos clave
+     * Aplicar idioma (solo actualiza el atributo lang del documento)
+     * El texto de la página permanece en español; para otros idiomas
+     * usa el traductor integrado de tu navegador.
      */
     applyTranslations() {
         try {
             const lang = this.currentLanguage || 'es';
-            const dict = this.translations[lang] || this.translations.es;
-
-            const map = [
-                { selector: '#navStore span:last-child', key: 'nav.store' },
-                { selector: '#navLibrary span:last-child', key: 'nav.library' },
-                { selector: '#navDashboard span:last-child', key: 'nav.dashboard' },
-                { selector: '#navEvents span:last-child', key: 'nav.events' },
-                { selector: '#navMissions span:last-child', key: 'nav.missions' },
-                { selector: '#navTokens span:last-child', key: 'nav.tokens' },
-                { selector: '#navDailyRewards span:last-child', key: 'nav.dailyRewards' },
-                { selector: '#ctaRegister span:last-child', key: 'cta.register' },
-                { selector: '#ctaExplore span:last-child', key: 'cta.explore' }
-            ];
-
-            map.forEach(({ selector, key }) => {
-                const el = document.querySelector(selector);
-                if (el && dict[key]) {
-                    el.textContent = dict[key];
-                }
-            });
-
-            // Hero subtitle
-            const heroSubtitle = document.querySelector('#heroSection p.text-2xl');
-            if (heroSubtitle && dict['hero.subtitle']) {
-                heroSubtitle.textContent = dict['hero.subtitle'];
-            }
-            // Hero body
-            const heroBody = document.querySelector('#heroSection p.text-gray-400.text-lg');
-            if (heroBody && dict['hero.body']) {
-                heroBody.textContent = dict['hero.body'];
-            }
-
-            // Guest message
-            const guestTitle = document.querySelector('#guestMessage h3');
-            if (guestTitle && dict['guest.title']) {
-                guestTitle.textContent = dict['guest.title'];
-            }
-            const guestSubtitle = document.querySelector('#guestMessage p.text-gray-400');
-            if (guestSubtitle && dict['guest.subtitle']) {
-                guestSubtitle.textContent = dict['guest.subtitle'];
-            }
-
-            // Section titles
-            const storeTitle = document.querySelector('#storeSection h3');
-            if (storeTitle && dict['section.store.title']) {
-                storeTitle.textContent = dict['section.store.title'];
-            }
-            const libraryTitle = document.querySelector('#librarySection h3');
-            if (libraryTitle && dict['section.library.title']) {
-                libraryTitle.textContent = dict['section.library.title'];
-            }
-            const dashTitle = document.querySelector('#dashboardSection h3');
-            if (dashTitle && dict['section.dashboard.title']) {
-                dashTitle.textContent = dict['section.dashboard.title'];
-            }
-            const profileTitle = document.querySelector('#profileSection h3');
-            if (profileTitle && dict['section.profile.title']) {
-                profileTitle.textContent = dict['section.profile.title'];
-            }
-            const tokensTitle = document.querySelector('#tokensSection h3');
-            if (tokensTitle && dict['section.tokens.title']) {
-                tokensTitle.textContent = dict['section.tokens.title'];
-            }
-            const eventsTitle = document.querySelector('#eventsSection h3');
-            if (eventsTitle && dict['section.events.title']) {
-                eventsTitle.textContent = dict['section.events.title'];
-            }
-            const drTitle = document.querySelector('#dailyRewardsSection h3');
-            if (drTitle && dict['section.dailyRewards.title']) {
-                drTitle.textContent = dict['section.dailyRewards.title'];
-            }
+            document.documentElement.setAttribute('lang', lang);
         } catch (e) {
-            console.error('Error aplicando traducciones:', e);
+            console.error('Error aplicando idioma:', e);
         }
     },
 
     /**
-     * Onboarding sencillo para primera vez
+     * Onboarding sencillo para primera vez (mensajes en español)
      */
     runOnboarding() {
         try {
@@ -167,11 +39,9 @@ const UI = {
                 if (el) el.classList.add('onboarding-highlight');
             });
 
-            const lang = this.currentLanguage || 'es';
-            const dict = this.translations[lang] || this.translations.es;
-            const tipStore = dict['onboarding.tip.store'];
-            const tipMissions = dict['onboarding.tip.missions'];
-            const tipDaily = dict['onboarding.tip.dailyRewards'];
+            const tipStore = 'Tip: Aquí puedes acceder rápidamente a la tienda.';
+            const tipMissions = 'Tip: Completa misiones para ganar más tokens.';
+            const tipDaily = 'Tip: Reclama tu recompensa diaria cada vez que inicies sesión.';
 
             if (tipStore) this.showInfo(tipStore);
             if (tipMissions) setTimeout(() => this.showInfo(tipMissions), 4000);
@@ -196,8 +66,6 @@ const UI = {
         if (modal) {
             modal.classList.add('active');
             modal.classList.remove('hidden');
-            
-            // Generar captcha si es el modal de registro
             if (modalId === 'registerModal') {
                 setTimeout(() => this.generateCaptcha(), 100);
             }
@@ -230,7 +98,6 @@ const UI = {
      * Mostrar sección y ocultar otras
      */
     showSection(sectionId) {
-        // Ocultar todas las secciones principales
         const sections = [
             'guestMessage',
             'storeSection',
@@ -247,7 +114,6 @@ const UI = {
             if (el) el.classList.add('hidden');
         });
 
-        // Tabs solo visibles en tienda / biblioteca
         const tabs = document.getElementById('tabsSection');
         if (tabs) {
             if (sectionId === 'storeSection' || sectionId === 'librarySection') {
@@ -257,7 +123,6 @@ const UI = {
             }
         }
 
-        // Mostrar la sección solicitada
         const section = document.getElementById(sectionId);
         if (section) {
             section.classList.remove('hidden');
@@ -268,23 +133,20 @@ const UI = {
      * Cambiar entre tabs (Tienda/Biblioteca)
      */
     switchTab(tabName) {
-        // Actualizar UI de tabs
         const tabStore = document.getElementById('tabStore');
         const tabLibrary = document.getElementById('tabLibrary');
 
         if (tabName === 'store') {
-            tabStore.classList.add('border-purple-500', 'text-white');
-            tabStore.classList.remove('border-transparent', 'text-gray-400');
-            tabLibrary.classList.remove('border-purple-500', 'text-white');
-            tabLibrary.classList.add('border-transparent', 'text-gray-400');
-
+            tabStore?.classList.add('border-purple-500', 'text-white');
+            tabStore?.classList.remove('border-transparent', 'text-gray-400');
+            tabLibrary?.classList.remove('border-purple-500', 'text-white');
+            tabLibrary?.classList.add('border-transparent', 'text-gray-400');
             this.showSection('storeSection');
         } else {
-            tabLibrary.classList.add('border-purple-500', 'text-white');
-            tabLibrary.classList.remove('border-transparent', 'text-gray-400');
-            tabStore.classList.remove('border-purple-500', 'text-white');
-            tabStore.classList.add('border-transparent', 'text-gray-400');
-
+            tabLibrary?.classList.add('border-purple-500', 'text-white');
+            tabLibrary?.classList.remove('border-transparent', 'text-gray-400');
+            tabStore?.classList.remove('border-purple-500', 'text-white');
+            tabStore?.classList.add('border-transparent', 'text-gray-400');
             this.showSection('librarySection');
         }
     },
@@ -337,7 +199,6 @@ const UI = {
 
         container.appendChild(toast);
 
-        // Auto-remover después de 5 segundos
         setTimeout(() => {
             toast.style.opacity = '0';
             toast.style.transform = 'translateX(100%)';
@@ -345,36 +206,24 @@ const UI = {
         }, 5000);
     },
 
-    /**
-     * Mostrar mensaje de éxito
-     */
     showSuccess(message) {
         this.showToast(message, 'success');
     },
 
-    /**
-     * Mostrar mensaje de error
-     */
     showError(message) {
         this.showToast(message, 'error');
     },
 
-    /**
-     * Mostrar mensaje de advertencia
-     */
     showWarning(message) {
         this.showToast(message, 'warning');
     },
 
-    /**
-     * Mostrar mensaje informativo
-     */
     showInfo(message) {
         this.showToast(message, 'info');
     },
 
     /**
-     * Mostrar spinner de carga en un botón
+     * Spinner de carga en botón
      */
     showButtonLoading(buttonId, show = true) {
         const button = document.getElementById(buttonId);
@@ -391,88 +240,70 @@ const UI = {
     },
 
     /**
-     * Actualizar UI después del login
+     * UI después de login
      */
     updateUIForLoggedInUser(user, tokens) {
-        // Ocultar botones de auth
+        // Cargar preferencias (favoritos y recientes)
+        if (window.Store && typeof Store.loadUserPreferences === 'function') {
+            Store.loadUserPreferences();
+        }
+
         document.getElementById('authButtons')?.classList.add('hidden');
 
-        // Mostrar sección de usuario en navbar
         const userSection = document.getElementById('userSection');
         if (userSection) {
             userSection.classList.remove('hidden');
             userSection.classList.add('flex');
         }
 
-        // Actualizar email y tokens (navbar)
         const userEmail = document.getElementById('userEmail');
         const userTokens = document.getElementById('userTokens');
         const userInitial = document.getElementById('userInitial');
 
-        if (userEmail) userEmail.textContent = user.email;
+        if (userEmail) userEmail.textContent = user.email || '';
         if (userTokens) userTokens.textContent = tokens || 0;
-        if (userInitial) userInitial.textContent = user.email.charAt(0).toUpperCase();
+        if (userInitial) userInitial.textContent = (user.email || 'S')[0].toUpperCase();
 
-        // Ocultar hero de landing
         const heroSection = document.getElementById('heroSection');
-        if (heroSection) {
-            heroSection.classList.add('hidden');
-        }
+        if (heroSection) heroSection.classList.add('hidden');
 
-        // Mostrar panel principal como pantalla inicial del launcher
         this.showSection('dashboardSection');
 
-        // Hacer scroll al inicio del main
         const main = document.querySelector('main');
-        if (main) {
-            main.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+        if (main) main.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        // Inicializar recompensas diarias para este usuario
         if (window.DailyRewards && typeof DailyRewards.onUserLogin === 'function') {
             DailyRewards.onUserLogin();
         }
 
-        // Ejecutar onboarding la primera vez
         this.runOnboarding();
     },
 
     /**
-     * Actualizar UI después del logout
+     * UI después de logout
      */
     updateUIForLoggedOutUser() {
-        // Mostrar botones de auth
         document.getElementById('authButtons')?.classList.remove('hidden');
 
-        // Ocultar sección de usuario
         const userSection = document.getElementById('userSection');
         if (userSection) {
             userSection.classList.add('hidden');
             userSection.classList.remove('flex');
         }
 
-        // Volver a mostrar hero de landing
         const heroSection = document.getElementById('heroSection');
-        if (heroSection) {
-            heroSection.classList.remove('hidden');
-        }
+        if (heroSection) heroSection.classList.remove('hidden');
 
-        // Mostrar mensaje de invitado
         this.showSection('guestMessage');
     },
 
-    /**
-     * Actualizar contador de tokens
-     */
     updateTokensDisplay(tokens) {
         const userTokens = document.getElementById('userTokens');
-        if (userTokens) {
-            userTokens.textContent = tokens;
-        }
+        if (userTokens) userTokens.textContent = tokens;
     },
 
     /**
-     * Crear modal de compra de tokens
+     * Crear modal de compra de tokens (solo español)
      */
     createBuyTokensModal() {
         const modalHTML = `
@@ -542,23 +373,12 @@ const UI = {
         }
     },
 
-    /**
-     * Toggle password visibility
-     */
     togglePassword(inputId) {
         const input = document.getElementById(inputId);
         if (!input) return;
-
-        if (input.type === 'password') {
-            input.type = 'text';
-        } else {
-            input.type = 'password';
-        }
+        input.type = input.type === 'password' ? 'text' : 'password';
     },
 
-    /**
-     * Check password strength
-     */
     checkPasswordStrength(password) {
         const strengthBar = document.getElementById('passwordStrengthBar');
         const strengthText = document.getElementById('passwordStrengthText');
@@ -576,7 +396,6 @@ const UI = {
         let strength = 0;
         let feedback = '';
 
-        // Criterios
         const hasLength = password.length >= 8;
         const hasUpper = /[A-Z]/.test(password);
         const hasLower = /[a-z]/.test(password);
@@ -589,7 +408,6 @@ const UI = {
         if (hasNumber) strength++;
         if (hasSpecial) strength++;
 
-        // Actualizar barra
         const width = (strength / 5) * 100;
         strengthBar.style.width = width + '%';
 
@@ -615,15 +433,12 @@ const UI = {
         }`;
     },
 
-    /**
-     * Generate CAPTCHA
-     */
     generateCaptcha() {
         const operations = ['+', '-', '×'];
         const operation = operations[Math.floor(Math.random() * operations.length)];
-        
+
         let num1, num2, answer;
-        
+
         if (operation === '+') {
             num1 = Math.floor(Math.random() * 20) + 1;
             num2 = Math.floor(Math.random() * 20) + 1;
@@ -641,41 +456,27 @@ const UI = {
         this.captchaValue = answer;
 
         const questionEl = document.getElementById('captchaQuestion');
-        if (questionEl) {
-            questionEl.textContent = `${num1} ${operation} ${num2}`;
-        }
+        if (questionEl) questionEl.textContent = `${num1} ${operation} ${num2}`;
 
-        // Limpiar respuesta
         const answerEl = document.getElementById('captchaAnswer');
-        if (answerEl) {
-            answerEl.value = '';
-        }
+        if (answerEl) answerEl.value = '';
 
         console.log('🔐 Captcha generado:', answer);
     },
 
-    /**
-     * Validate CAPTCHA
-     */
     validateCaptcha() {
         const answerEl = document.getElementById('captchaAnswer');
         if (!answerEl) return false;
-
         const userAnswer = parseInt(answerEl.value);
         return userAnswer === this.captchaValue;
     },
 
-    /**
-     * Mostrar modal OTP para verificar código
-     */
     showOTPModal(email) {
-        // Crear modal si no existe
         if (!document.getElementById('otpModal')) {
             const modalHTML = `
                 <div id="otpModal" class="modal active">
                     <div class="modal-backdrop" onclick="event.stopPropagation()"></div>
                     <div class="modal-content glass-effect animate-slide-up max-w-md">
-                        <!-- Header -->
                         <div class="modal-header">
                             <div class="flex items-center space-x-3">
                                 <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
@@ -690,14 +491,12 @@ const UI = {
                             </div>
                         </div>
 
-                        <!-- Body -->
                         <div class="modal-body space-y-6">
                             <div class="text-center">
                                 <p class="text-gray-300 mb-2">Hemos enviado un código de 6 dígitos a:</p>
                                 <p class="text-purple-400 font-semibold text-lg" id="otpEmail">${email}</p>
                             </div>
 
-                            <!-- Inputs de código -->
                             <div class="flex justify-center space-x-2" id="otpInputsContainer">
                                 <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-800 text-white rounded-lg border-2 border-gray-600 focus:border-purple-500 transition" data-index="0">
                                 <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-800 text-white rounded-lg border-2 border-gray-600 focus:border-purple-500 transition" data-index="1">
@@ -707,14 +506,12 @@ const UI = {
                                 <input type="text" maxlength="1" class="otp-input w-12 h-14 text-center text-2xl font-bold bg-gray-800 text-white rounded-lg border-2 border-gray-600 focus:border-purple-500 transition" data-index="5">
                             </div>
 
-                            <!-- Temporizador -->
                             <div class="text-center">
                                 <p class="text-gray-400 text-sm">
                                     ⏱️ Código expira en: <span class="text-purple-400 font-semibold" id="otpTimer">60:00</span>
                                 </p>
                             </div>
 
-                            <!-- Botones -->
                             <div class="space-y-3">
                                 <button onclick="Auth.verifyOTPFromModal()" id="btnVerifyOTP" class="btn-primary w-full">
                                     <span class="btn-text">Verificar Código</span>
@@ -737,58 +534,39 @@ const UI = {
                     </div>
                 </div>
             `;
-            
+
             document.getElementById('modalsContainer').insertAdjacentHTML('beforeend', modalHTML);
         } else {
-            // Si ya existe, solo mostrarlo
             const modal = document.getElementById('otpModal');
             modal.classList.add('active');
             modal.classList.remove('hidden');
-            
-            // Actualizar email
             document.getElementById('otpEmail').textContent = email;
-            
-            // Limpiar inputs
             document.querySelectorAll('.otp-input').forEach(input => {
                 input.value = '';
             });
         }
 
-        // Configurar eventos de inputs
         this.setupOTPInputs();
-        
-        // Iniciar temporizador
-        this.startOTPTimer(3600); // 60 minutos
+        this.startOTPTimer(3600);
 
-        // Focus en primer input
         setTimeout(() => {
             document.querySelector('.otp-input')?.focus();
         }, 100);
     },
 
-    /**
-     * Configurar inputs de OTP con auto-focus y paste
-     */
     setupOTPInputs() {
         const inputs = document.querySelectorAll('.otp-input');
-        
+
         inputs.forEach((input, index) => {
-            // Solo números
             input.addEventListener('input', (e) => {
                 const value = e.target.value;
-                
-                // Solo permitir números
                 if (!/^\d*$/.test(value)) {
                     e.target.value = '';
                     return;
                 }
-
-                // Auto-focus al siguiente
                 if (value && index < inputs.length - 1) {
                     inputs[index + 1].focus();
                 }
-
-                // Cambiar borde a morado cuando está lleno
                 if (value) {
                     e.target.classList.remove('border-gray-600');
                     e.target.classList.add('border-purple-500');
@@ -798,25 +576,19 @@ const UI = {
                 }
             });
 
-            // Backspace para volver atrás
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Backspace' && !e.target.value && index > 0) {
                     inputs[index - 1].focus();
                     inputs[index - 1].value = '';
                 }
-
-                // Enter para verificar
                 if (e.key === 'Enter') {
                     Auth.verifyOTPFromModal();
                 }
             });
 
-            // Paste support (pegar código completo)
             input.addEventListener('paste', (e) => {
                 e.preventDefault();
                 const pastedData = e.clipboardData.getData('text').trim();
-                
-                // Si es un código de 6 dígitos
                 if (/^\d{6}$/.test(pastedData)) {
                     inputs.forEach((inp, idx) => {
                         inp.value = pastedData[idx] || '';
@@ -825,16 +597,12 @@ const UI = {
                             inp.classList.add('border-purple-500');
                         }
                     });
-                    // Focus en el último
                     inputs[inputs.length - 1].focus();
                 }
             });
         });
     },
 
-    /**
-     * Obtener código OTP ingresado
-     */
     getOTPCode() {
         const inputs = document.querySelectorAll('.otp-input');
         let code = '';
@@ -844,19 +612,12 @@ const UI = {
         return code;
     },
 
-    /**
-     * Iniciar temporizador de OTP
-     */
     startOTPTimer(seconds) {
         const timerEl = document.getElementById('otpTimer');
         if (!timerEl) return;
 
         let remaining = seconds;
-
-        // Limpiar temporizador anterior si existe
-        if (this.otpTimerInterval) {
-            clearInterval(this.otpTimerInterval);
-        }
+        if (this.otpTimerInterval) clearInterval(this.otpTimerInterval);
 
         const updateTimer = () => {
             const minutes = Math.floor(remaining / 60);
@@ -869,7 +630,6 @@ const UI = {
                 timerEl.classList.add('text-red-400');
                 this.showError('El código ha expirado. Solicita uno nuevo.');
             }
-
             remaining--;
         };
 
@@ -877,33 +637,21 @@ const UI = {
         this.otpTimerInterval = setInterval(updateTimer, 1000);
     },
 
-    /**
-     * Reiniciar temporizador de OTP
-     */
     restartOTPTimer() {
         const timerEl = document.getElementById('otpTimer');
-        if (timerEl) {
-            timerEl.classList.remove('text-red-400');
-        }
+        if (timerEl) timerEl.classList.remove('text-red-400');
         this.startOTPTimer(3600);
     },
 
-    /**
-     * Cerrar modal OTP
-     */
     closeOTPModal() {
         const modal = document.getElementById('otpModal');
         if (modal) {
             modal.classList.remove('active');
             modal.classList.add('hidden');
         }
-
-        // Limpiar temporizador
-        if (this.otpTimerInterval) {
-            clearInterval(this.otpTimerInterval);
-        }
+        if (this.otpTimerInterval) clearInterval(this.otpTimerInterval);
     }
 };
 
 // Hacer disponible globalmente
-window.UI = UI;
+window.UI = UI; 
