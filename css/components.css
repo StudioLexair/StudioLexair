@@ -3,15 +3,28 @@
 /* Game Cards */
 .game-card {
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.9); /* fondo oscuro por defecto */
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    color: inherit;
+}
+
+/* Cards en tema claro: mantener fondo oscuro para que el texto claro se lea bien */
+body.theme-light .game-card {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(148, 163, 184, 0.5);
+}
+
+/* Cards en tema neón: un poco de brillo sin perder legibilidad */
+body.theme-neon .game-card {
+    background: radial-gradient(circle at top, rgba(45, 212, 191, 0.15), rgba(15, 23, 42, 0.98));
+    border-color: rgba(94, 234, 212, 0.6);
 }
 
 .game-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
-    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 10px 30px rgba(139, 92, 246, 0.35);
+    border-color: rgba(139, 92, 246, 0.7);
 }
 
 /* Buttons */
@@ -33,6 +46,17 @@
 
 .btn-secondary:hover {
     background: rgba(255, 255, 255, 0.2);
+}
+
+/* Ajuste de botones secundarios en tema claro: evitar fondo blanco feo */
+body.theme-light .btn-secondary {
+    background: rgba(15, 23, 42, 0.9); /* fondo oscuro para buen contraste */
+    color: #e5e7eb;
+    border-color: rgba(148, 163, 184, 0.7);
+}
+
+body.theme-light .btn-secondary:hover {
+    background: rgba(15, 23, 42, 1);
 }
 
 /* Coin Badge */
