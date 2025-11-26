@@ -678,4 +678,4 @@ const Auth = {
 };
 
 // Hacer disponible globalmente
-window.Auth = Auth; 
+window.Auth = Auth;  
