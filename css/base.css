@@ -39,6 +39,16 @@ body {
     font-family: 'Inter', sans-serif;
     background: var(--background-main);
     min-height: 100vh;
+    color: #e5e7eb; /* texto base claro por defecto */
+}
+
+/* Ajustes de color de texto según tema */
+body.theme-light {
+    color: #111827; /* gris muy oscuro para buen contraste sobre fondo claro */
+}
+
+body.theme-neon {
+    color: #e5e7eb; /* mantener claro en fondo oscuro/neón */
 }
 
 .logo-font {
@@ -95,9 +105,22 @@ textarea:focus-visible {
 
 /* Utility */
 .glass-effect {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.65); /* base oscura, buen contraste en dark/neon */
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+/* Versión para tema claro: mantener tarjetas oscuras para mejor contraste con texto blanco */
+body.theme-light .glass-effect {
+    background: rgba(15, 23, 42, 0.9);
+    border-color: rgba(148, 163, 184, 0.5);
+    color: #e5e7eb;
+}
+
+/* Versión para tema neón: un poco más transparente pero legible */
+body.theme-neon .glass-effect {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(94, 234, 212, 0.4);
 }
 
 .gradient-text {
