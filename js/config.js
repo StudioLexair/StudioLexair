@@ -311,4 +311,4 @@ window.initializeSupabaseClients = initializeSupabaseClients;
 window.getNextAvailableProject = getNextAvailableProject;
 window.checkAllProjectsCapacity = checkAllProjectsCapacity;
 window.checkProjectCapacity = checkProjectCapacity;
-window.getSystemStatus = getSystemStatus;
+window.getSystemStatus = getSystemStatus; 
