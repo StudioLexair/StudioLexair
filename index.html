@@ -1,1118 +1,461 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Lexair Launcher - Juegos, Apps y Herramientas</title>
-    <meta name="theme-color" content="#0f0c29">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.webmanifest">
-
-    <!-- SEO Meta -->
-    <meta name="description" content="Studio Lexair Launcher: tu plataforma para descubrir, jugar y gestionar juegos, aplicaciones y herramientas, ganando tokens y desbloqueando contenido premium.">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="Studio Lexair Launcher - Juegos, Apps y Herramientas">
-    <meta property="og:description" content="Descubre, instala y usa juegos, aplicaciones y herramientas increíbles. Gana tokens, desbloquea contenido exclusivo y únete a la comunidad Studio Lexair.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://studiolexair.servegame.com/">
-    <meta property="og:image" content="https://studiolexair.servegame.com/assets/banner-og.png">
-    <meta property="og:site_name" content="Studio Lexair Launcher">
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Studio Lexair Launcher - Juegos, Apps y Herramientas">
-    <meta name="twitter:description" content="Tu launcher de juegos, apps y herramientas con sistema de tokens y recompensas.">
-    <meta name="twitter:image" content="https://studiolexair.servegame.com/assets/banner-og.png">
-    
-    <!-- Tailwind CSS -->
+    <title>Studio Lexair | Desarrollo de Software</title>
+    <meta name="description" content="Soluciones digitales a medida: webs, apps, videojuegos y software personalizado desde Santa Clara, Cuba para el mundo.">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <!-- Custom Styles -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💻</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .bg-grid {
+            background-image: linear-gradient(to right, #1f2937 1px, transparent 1px),
+                              linear-gradient(to bottom, #1f2937 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
 </head>
-<body class="antialiased">
+<body class="bg-gray-900 text-white antialiased selection:bg-blue-500 selection:text-white">
 
-    <!-- Banner de confirmación exitosa -->
-    <div id="confirmedBanner" class="hidden email-confirmed-banner text-white text-center py-4 px-6 fixed top-0 left-0 right-0 z-50">
-        <div class="flex items-center justify-center space-x-3">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span class="font-semibold">✅ ¡Tu cuenta ha sido activada exitosamente! Por favor inicia sesión.</span>
-        </div>
-    </div>
-
-    <!-- Header / Navigation -->
-    <nav class="bg-black bg-opacity-50 backdrop-blur-md border-b border-purple-500 border-opacity-30 sticky top-0 z-40">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-gray-900/90 backdrop-blur-md border-b border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-xl">SL</span>
-                    </div>
-                    <h1 class="logo-font font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 leading-tight">
-                        <span class="block sm:inline">Studio</span>
-                        <span class="block sm:inline sm:ml-1">Lexair</span>
-                    </h1>
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
+                        STUDIO LEXAIR
+                    </span>
                 </div>
-                
-                <div class="flex items-center space-x-3">
-                    <!-- Theme selector -->
-                    <select id="themeSelect" class="hidden sm:block bg-gray-900 text-gray-200 text-xs rounded-lg px-2 py-1 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-purple-500">
-                        <option value="dark">Oscuro</option>
-                        <option value="light">Claro</option>
-                        <option value="neon">Neón</option>
-                    </select>
-
-                    <!-- User Section (Logged In) -->
-                    <div id="userSection" class="hidden flex items-center space-x-3">
-                        <!-- Botón panel usuario (visible en todos los dispositivos) -->
-                        <button id="btnUserDrawer" class="p-2 rounded-lg border border-purple-500 text-purple-300 hover:bg-purple-600/20 transition flex items-center justify-center">
-                            <!-- Icono hamburguesa -->
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                        </button>
-                    </div>
-                
-                    <!-- Auth Buttons (Logged Out) -->
-                    <div id="authButtons" class="flex space-x-3">
-                        <button id="btnShowLogin" class="text-white hover:text-purple-300 px-4 py-2 rounded-lg transition">
-                            Iniciar Sesión
-                        </button>
-                        <button id="btnShowRegister" class="btn-primary text-white px-6 py-2 rounded-lg font-semibold">
-                            Registrarse
-                        </button>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#inicio" class="hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Inicio</a>
+                        <a href="#servicios" class="hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Servicios</a>
+                        <a href="#proceso" class="hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Proceso</a>
+                        <a href="#precios" class="hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium transition-colors">Precios</a>
+                        <a href="#contacto" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">Contacto</a>
                     </div>
                 </div>
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-800 border-b border-gray-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#inicio" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">Inicio</a>
+                <a href="#servicios" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">Servicios</a>
+                <a href="#proceso" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">Proceso</a>
+                <a href="#precios" class="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700">Precios</a>
+                <a href="#contacto" class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white">Contacto</a>
             </div>
         </div>
     </nav>
 
-    <!-- Panel de usuario (lateral) -->
-    <div id="userDrawer" class="fixed inset-0 z-40 hidden">
-        <!-- Backdrop -->
-        <div id="userDrawerBackdrop" class="absolute inset-0 bg-black bg-opacity-60"></div>
-        <!-- Panel -->
-        <div class="absolute inset-y-0 right-0 w-72 bg-gray-900 border-l border-purple-500 border-opacity-40 shadow-2xl flex flex-col p-5 space-y-4">
-            <!-- Header simple -->
-            <div class="flex items-center justify-between mb-2">
-                <p class="text-xs text-gray-500 uppercase tracking-wide">Menú</p>
-                <button id="btnCloseUserDrawer" class="text-gray-400 hover:text-white transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-
-
-            <!-- Navegación principal -->
-            <nav class="flex flex-col space-y-2">
-                <button id="navProfile" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
-                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>Perfil</span>
-                </button>
-
-                <button id="navDashboard" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
-                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4"/>
-                    </svg>
-                    <span>Panel principal</span>
-                </button>
-
-                <button id="navStore" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
-                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M4 8h16l-1 11H5L4 8zM10 12h4"/>
-                    </svg>
-                    <span>Tienda</span>
-                </button>
-
-                <button id="navLibrary" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
-                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 7H20M4 12h16"/>
-                    </svg>
-                    <span>Biblioteca</span>
-                </button>
-
-                <button id="navEvents" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
-                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                    <span>Eventos</span>
-                </button>
-
-                <button id="navMissions" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
-                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m-6 4v6m4-10v10M5 9h14"/>
-                    </svg>
-                    <span>Misiones</span>
-                </button>
-
-                <button id="navTokens" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
-                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <span>Tokens</span>
-                </button>
-
-                <button id="navDailyRewards" class="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-semibold text-gray-200 hover:bg-purple-600/30 transition">
-                    <svg class="w-5 h-5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16 0V9a2 2 0 00-2-2h-3m5 5H4m0 0V9a2 2 0 012-2h3m3-4l2.121 2.121A1.5 1.5 0 0114.5 7.5H9.5A1.5 1.5 0 018.379 5.121L10.5 3m3 0L12 5.5"/>
-                    </svg>
-                    <span>Recompensas diarias</span>
-                </button>
-            </nav>
-
-            <!-- Acciones -->
-            <div class="mt-auto space-y-3">
-                <button id="btnLogoutMobile" class="w-full flex items-center justify-center space-x-2 text-red-400 hover:text-red-300 border border-red-500/40 rounded-lg py-2 text-sm font-semibold transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2v-1m0-8V7a2 2 0 012-2h4a2 2 0 012 2v1"/>
-                    </svg>
-                    <span>Cerrar sesión</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <!-- Hero Section Épico -->
-        <div id="heroSection" class="text-center mb-20">
-            <!-- Logo Grande -->
-            <div class="inline-block mb-8">
-                <div class="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-110 transition-all duration-300">
-                    <span class="text-white font-black text-6xl logo-font">SL</span>
-                </div>
-            </div>
-            
-            <!-- Título Principal -->
-            <h1 class="logo-font text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 mb-6 animate-fade-in">
-                Studio Lexair
-            </h1>
-            
-            <!-- Subtítulo -->
-            <p class="text-2xl md:text-3xl text-purple-300 mb-4 font-semibold">
-                Tu Launcher de Juegos, Apps y Herramientas
-            </p>
-            
-            <p class="text-gray-400 text-lg mb-8 max-w-3xl mx-auto">
-                Descubre, instala y usa juegos, aplicaciones y herramientas increíbles. 
-                Gana tokens, desbloquea contenido exclusivo y únete a una comunidad global de creadores y usuarios.
-            </p>
-            
-            <!-- CTA Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-                <button id="ctaRegister" class="btn-primary text:white px-8 py-4 rounded-xl font-bold text-lg shadow-2xl transform hover:scale-105 transition-all flex items-center space-x-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
-                    </svg>
-                    <span>Comenzar Gratis</span>
-                </button>
-                <button id="ctaExplore" class="btn-secondary text-white px-8 py-4 rounded-xl font-bold text-lg border-2 border-purple-500 hover:bg-opacity-20 transition-all flex items-center space-x-3">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <span>Explorar Contenido</span>
-                </button>
-            </div>
-            
-            <!-- Features Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-16">
-                <!-- Feature 1 -->
-                <div class="glass-effect rounded-2xl p-6 text-left hover:border-purple-500 transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">Acceso Instantáneo</h3>
-                    <p class="text-gray-400 text-sm">
-                        Usa juegos, apps y herramientas en segundos. Sin descargas, sin esperas. Todo directo en tu navegador.
-                    </p>
-                </div>
-                
-                <!-- Feature 2 -->
-                <div class="glass-effect rounded-2xl p-6 text-left hover:border-purple-500 transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text:white mb-2">Tokens Gratis</h3>
-                    <p class="text-gray-400 text-sm">
-                        Gana tokens usando el launcher y desbloquea contenido premium sin gastar dinero real.
-                    </p>
-                </div>
-                
-                <!-- Feature 3 -->
-                <div class="glass-effect rounded-2xl p-6 text-left hover:border-purple-500 transition-all duration-300">
-                    <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-4">
-                        <svg class="w-8 h-8 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-white mb-2">100% Seguro</h3>
-                    <p class="text-gray-400 text-sm">
-                        Tu información protegida con cifrado de nivel bancario. Usa el launcher con total confianza.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Cómo funciona -->
-            <section class="max-w-4xl mx-auto mb-16 text-left">
-                <h2 class="text-3xl font-bold text-white mb-6 text-center">¿Cómo funciona Studio Lexair?</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Paso 1 -->
-                    <div class="glass-effect rounded-2xl p-6 flex flex-col h-full">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4">
-                            <span class="text-white font-bold">1</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-white mb-2">Crea tu cuenta</h3>
-                        <p class="text-gray-400 text-sm flex-1">
-                            Regístrate gratis con tu email, completa tu perfil y activa tu cuenta para guardar tu progreso y tu biblioteca en la nube.
-                        </p>
-                    </div>
-
-                    <!-- Paso 2 -->
-                    <div class="glass-effect rounded-2xl p-6 flex flex-col h-full">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center mb-4">
-                            <span class="text-white font-bold">2</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-white mb-2">Consigue tokens</h3>
-                        <p class="text-gray-400 text-sm flex-1">
-                            Gana tokens al usar el launcher, reclamar recompensas diarias y completar misiones. Úsalos para desbloquear juegos, apps y herramientas.
-                        </p>
-                    </div>
-
-                    <!-- Paso 3 -->
-                    <div class="glass-effect rounded-2xl p-6 flex flex-col h-full">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4">
-                            <span class="text-white font-bold">3</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-white mb-2">Juega y explora</h3>
-                        <p class="text-gray-400 text-sm flex-1">
-                            Lanza juegos y aplicaciones directamente desde tu navegador, guarda tus favoritos y mantén todo tu contenido en un solo lugar.
-                        </p>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- Tabs Navigation -->
-        <div id="tabsSection" class="hidden mb-8">
-            <div class="flex space-x-4 border-b border-purple-500 border-opacity-30">
-                <button id="tabStore" class="tab-btn px-6 py-3 text-white font-semibold border-b-2 border-purple-500">
-                    Tienda
-                </button>
-                <button id="tabLibrary" class="tab-btn px-6 py-3 text-gray-400 font-semibold border-b-2 border-transparent hover:text-white transition">
-                    Mi Biblioteca
-                </button>
-            </div>
-        </div>
-
-        <!-- Store Section / Dashboard -->
-        <div id="storeSection" class="hidden">
-            <!-- Header Dashboard -->
-            <div class="mb-6 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-                <div>
-                    <h3 class="text-2xl font-bold text:white mb-1">Tienda de Juegos, Apps y Herramientas</h3>
-                    <p class="text-gray-400 text-sm max-w-xl">
-                        Explora el catálogo completo de juegos, aplicaciones y herramientas. Filtra por categoría o encuentra contenido gratis y de pago usando los filtros.
-                    </p>
-                </div>
-                
-                <!-- Search & Filters -->
-                <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                    <!-- Buscador -->
-                    <div class="relative flex-1">
-                        <span class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </span>
-                        <input id="gameSearch" type="text" placeholder="Buscar por nombre..." 
-                               class="w-full pl-10 pr-4 py-2 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 focus:ring-0 text-sm" />
-                    </div>
-
-                    <!-- Categoría -->
-                    <select id="gameCategoryFilter" 
-                            class="sm:w-48 px-3 py-2 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 focus:ring-0 text-sm">
-                        <option value="all">Todas las categorías</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Filtros rápidos -->
-            <div class="mb-6 flex flex-wrap gap-2">
-                <button id="filterAll" class="px-4 py-2 rounded-full text-xs font-semibold bg-purple-600 text:white hover:bg-purple-700 transition filter-pill active">
-                    Todo
-                </button>
-                <button id="filterFree" class="px-4 py-2 rounded-full text-xs font-semibold bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text:white transition filter-pill">
-                    Gratis
-                </button>
-                <button id="filterPaid" class="px-4 py-2 rounded-full text-xs font-semibold bg-gray-800 text-gray-300 hover:bg-purple-600 hover:text:white transition filter-pill">
-                    De Pago
-                </button>
-                <button id="filterFavorites" class="px-4 py-2 rounded-full text-xs font-semibold bg-gray-800 text-gray-300 hover:bg-yellow-500 hover:text-black transition filter-pill">
-                    Favoritos
-                </button>
-            </div>
-
-            <!-- Grid de Juegos / Contenido -->
-            <div id="gamesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Games will be loaded here -->
-            </div>
-            <!-- Botón Cargar más -->
-            <div id="storeLoadMoreWrapper" class="mt-6 text-center hidden">
-                <button id="btnStoreLoadMore" class="btn-secondary text-white px-6 py-2 rounded-lg font-semibold border border-purple-500 hover:bg-opacity-20 transition">
-                    Cargar más
-                </button>
-            </div>
-        </div>
-
-        <!-- Library Section -->
-        <div id="librarySection" class="hidden">
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text:white mb-4">Mi Biblioteca</h3>
-            </div>
-            <div id="libraryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Owned games will be loaded here -->
-            </div>
-        </div>
-
-        <!-- Dashboard Section -->
-        <div id="dashboardSection" class="hidden">
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text:white mb-2">Panel Principal</h3>
-                <p class="text-gray-400 text-sm max-w-xl">
-                    Resumen de tu cuenta y accesos rápidos a las secciones principales del launcher.
+    <!-- Hero Section -->
+    <section id="inicio" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <div class="absolute inset-0 bg-grid opacity-[0.05] z-0"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center">
+                <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight mb-6">
+                    Soluciones Digitales <br>
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-300">
+                        Sin Límites
+                    </span>
+                </h1>
+                <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-10">
+                    Desde Santa Clara para el mundo. Desarrollamos software a medida, aplicaciones móviles, sitios web y videojuegos para transformar tu visión en realidad.
                 </p>
-            </div>
-            <!-- Jugados recientemente -->
-            <div id="recentSection" class="mb-8 hidden">
-                <div class="flex items-center justify-between mb-3">
-                    <h4 class="text-lg font-semibold text:white">Jugados recientemente</h4>
-                    <p class="text-xs text-gray-500">Atajo: pulsa <span class="font-mono">S</span> para ir a la tienda</p>
-                </div>
-                <div id="recentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                <!-- Acceso rápido: Tienda -->
-                <button id="dashGoStore" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                        <svg class="w-6 h-6 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18M4 8h16l-1 11H5L4 8zM10 12h4"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text:white font-semibold">Ir a la Tienda</p>
-                        <p class="text-gray-400 text-xs">Explora y consigue nuevo contenido</p>
-                    </div>
-                </button>
-
-                <!-- Acceso rápido: Biblioteca -->
-                <button id="dashGoLibrary" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                        <svg class="w-6 h-6 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19.5A2.5 2.5 0 016.5 17H20M4 4.5A2.5 2.5 0 016.5 7H20M4 12h16"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text:white font-semibold">Mi Biblioteca</p>
-                        <p class="text-gray-400 text-xs">Revisa y lanza tu contenido</p>
-                    </div>
-                </button>
-
-                <!-- Acceso rápido: Tokens -->
-                <button id="dashGoTokens" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center">
-                        <svg class="w-6 h-6 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text:white font-semibold">Tokens</p>
-                        <p class="text-gray-400 text-xs">Consulta tu saldo y paquetes</p>
-                    </div>
-                </button>
-
-                <!-- Acceso rápido: Eventos -->
-                <button id="dashGoEvents" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
-                        <svg class="w-6 h-6 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text:white font-semibold">Eventos</p>
-                        <p class="text-gray-400 text-xs">Participa y gana recompensas</p>
-                    </div>
-                </button>
-
-                <!-- Acceso rápido: Misiones -->
-                <button id="dashGoMissions" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center">
-                        <svg class="w-6 h-6 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m-6 4v6m4-10v10M5 9h14"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text:white font-semibold">Misiones</p>
-                        <p class="text-gray-400 text-xs">Completa retos y gana tokens</p>
-                    </div>
-                </button>
-
-                <!-- Acceso rápido: Recompensas diarias -->
-                <button id="dashGoDailyRewards" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-yellow-400 to-pink-500 flex items-center justify-center">
-                        <svg class="w-6 h-6 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16 0V9a2 2 0 00-2-2h-3m5 5H4m0 0V9a2 2 0 012-2h3m3-4l2.121 2.121A1.5 1.5 0 0114.5 7.5H9.5A1.5 1.5 0 018.379 5.121L10.5 3m3 0L12 5.5"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text:white font-semibold">Recompensas diarias</p>
-                        <p class="text-gray-400 text-xs">Reclama tus tokens de login</p>
-                    </div>
-                </button>
-
-                <!-- Acceso rápido: Perfil -->
-                <button id="dashGoProfile" class="glass-effect rounded-2xl p-5 text-left hover:border-purple-500 transition flex items-center space-x-4">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                        <svg class="w-6 h-6 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text:white font-semibold">Perfil</p>
-                        <p class="text-gray-400 text-xs">Datos de tu cuenta y seguridad</p>
-                    </div>
-                </button>
-            </div>
-        </div>
-
-        <!-- Profile Section -->
-        <div id="profileSection" class="hidden">
-            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <h3 class="text-2xl font-bold text:white mb-1">Mi Perfil</h3>
-                    <p class="text-gray-400 text-sm">Gestiona la información de tu cuenta Studio Lexair.</p>
-                </div>
-            </div>
-            <div class="glass-effect rounded-2xl p-6 flex flex-col md:flex-row md:items-center md:space-x-6 mb-6">
-                <div class="flex items-center justify-center mb-4 md:mb-0">
-                    <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-3xl font-bold text:white" id="profileAvatar">
-                        SL
-                    </div>
-                </div>
-                <div class="flex-1 space-y-2">
-                    <p class="text-sm text-gray-400 uppercase tracking-wide">Correo electrónico</p>
-                    <p class="text:white font-semibold break-all" id="profileEmail">-</p>
-                    <p class="text-sm text-gray-400 uppercase tracking-wide mt-4">Nombre de usuario</p>
-                    <p class="text:white font-semibold" id="profileUsername">-</p>
-                    <p class="text-sm text-gray-400 uppercase tracking-wide mt-4">Nombre completo</p>
-                    <p class="text:white font-semibold" id="profileFullName">-</p>
-                    <p class="text-sm text-gray-400 uppercase tracking-wide mt-4">Fecha de nacimiento</p>
-                    <p class="text:white font-semibold" id="profileBirthdate">-</p>
+                <div class="flex justify-center gap-4 flex-col sm:flex-row">
+                    <a href="#contacto" class="px-8 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold text-lg transition-all shadow-lg shadow-blue-600/20">
+                        Cotizar Proyecto
+                    </a>
+                    <a href="#servicios" class="px-8 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg font-semibold text-lg transition-all">
+                        Ver Servicios
+                    </a>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Tokens Section -->
-        <div id="tokensSection" class="hidden">
-            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <h3 class="text-2xl font-bold text:white mb-1">Mis Tokens</h3>
-                    <p class="text-gray-400 text-sm max-w-xl">
-                        Los tokens son la moneda virtual de Studio Lexair. Puedes usarlos para desbloquear contenido premium y participar en eventos especiales.
-                    </p>
+    <!-- About Section -->
+    <section class="py-16 bg-gray-800/50 border-y border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:flex lg:items-center lg:gap-16">
+                <div class="lg:w-1/2 mb-10 lg:mb-0">
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-700 bg-gray-900 p-8">
+                        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-500 rounded-full blur-3xl opacity-20"></div>
+                        <h3 class="text-2xl font-bold mb-4 text-white">Sobre Studio Lexair</h3>
+                        <p class="text-gray-400 mb-4">
+                            Fundado por <strong class="text-blue-400">Airien Yolexis Rojas Roque</strong>, Studio Lexair es una firma independiente de desarrollo de software con un objetivo claro: crear cualquier solución digital que el cliente necesite.
+                        </p>
+                        <p class="text-gray-400">
+                            Ubicados en Santa Clara, Cuba, pero con alcance global, combinamos creatividad técnica con eficiencia para entregar productos de alta calidad, ya sea para emprendedores locales o empresas internacionales.
+                        </p>
+                        <div class="mt-6 flex items-center gap-4 text-sm text-gray-500">
+                            <span class="flex items-center gap-2"><i class="fas fa-map-marker-alt text-blue-500"></i> Santa Clara, Cuba</span>
+                            <span class="flex items-center gap-2"><i class="fas fa-globe text-blue-500"></i> Alcance Global</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 grid grid-cols-2 gap-4">
+                    <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-blue-500/50 transition-colors">
+                        <i class="fas fa-code text-3xl text-blue-500 mb-3"></i>
+                        <h4 class="font-bold">Desarrollo</h4>
+                        <p class="text-sm text-gray-400">Código limpio y escalable.</p>
+                    </div>
+                    <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-purple-500/50 transition-colors">
+                        <i class="fas fa-paint-brush text-3xl text-purple-500 mb-3"></i>
+                        <h4 class="font-bold">Diseño</h4>
+                        <p class="text-sm text-gray-400">Interfaces modernas y UX.</p>
+                    </div>
+                    <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-green-500/50 transition-colors">
+                        <i class="fas fa-rocket text-3xl text-green-500 mb-3"></i>
+                        <h4 class="font-bold">Innovación</h4>
+                        <p class="text-sm text-gray-400">Tecnologías actuales.</p>
+                    </div>
+                    <div class="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-yellow-500/50 transition-colors">
+                        <i class="fas fa-headset text-3xl text-yellow-500 mb-3"></i>
+                        <h4 class="font-bold">Soporte</h4>
+                        <p class="text-sm text-gray-400">Atención personalizada.</p>
+                    </div>
                 </div>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="glass-effect rounded-2xl p-6 flex flex-col items-center justify-center">
-                    <p class="text-sm text-gray-400 uppercase tracking-wide mb-1">Saldo actual</p>
-                    <p class="text-4xl font-black text-yellow-400 mb-1" id="tokensPageAmount">0</p>
-                    <p class="text-xs text-gray-500">TOKENS</p>
-                </div>
-                <div class="glass-effect rounded-2xl p-6 flex flex-col justify-center">
-                    <p class="text-sm text-gray-400 uppercase tracking-wide mb-2">Formas de conseguir tokens</p>
-                    <ul class="text-gray-300 text-sm list-disc list-inside space-y-1">
-                        <li>Usando el launcher y completando eventos especiales.</li>
-                        <li>Comprando paquetes de tokens desde esta sección.</li>
-                        <li>Participando en promociones y recompensas diarias.</li>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="servicios" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white sm:text-4xl">Nuestros Servicios</h2>
+                <p class="mt-4 text-gray-400">Cubrimos todo el espectro del desarrollo de software.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Web -->
+                <div class="group bg-gray-800/50 p-8 rounded-2xl border border-gray-700 hover:bg-gray-800 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-blue-900/50 rounded-lg flex items-center justify-center mb-6 text-blue-400 group-hover:text-blue-300">
+                        <i class="fas fa-laptop-code text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Páginas Web</h3>
+                    <p class="text-gray-400 text-sm mb-4">Desde landing pages de alto impacto hasta sitios corporativos completos y tiendas online (E-commerce).</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li><i class="fas fa-check text-blue-500 mr-2"></i>Landing Pages</li>
+                        <li><i class="fas fa-check text-blue-500 mr-2"></i>Tiendas Online</li>
+                        <li><i class="fas fa-check text-blue-500 mr-2"></i>Portafolios</li>
                     </ul>
                 </div>
-                <div class="glass-effect rounded-2xl p-6 flex flex-col justify-center">
-                    <p class="text-sm text-gray-400 uppercase tracking-wide mb-2">Sugerencias</p>
-                    <p class="text-gray-300 text-sm">
-                        Utiliza tus tokens para desbloquear tu contenido favorito y guarda siempre un pequeño saldo para futuros eventos y recompensas especiales.
-                    </p>
+
+                <!-- Mobile -->
+                <div class="group bg-gray-800/50 p-8 rounded-2xl border border-gray-700 hover:bg-gray-800 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-purple-900/50 rounded-lg flex items-center justify-center mb-6 text-purple-400 group-hover:text-purple-300">
+                        <i class="fas fa-mobile-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Aplicaciones Móviles</h3>
+                    <p class="text-gray-400 text-sm mb-4">Desarrollo de apps nativas o híbridas para iOS y Android, optimizadas para rendimiento y experiencia de usuario.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li><i class="fas fa-check text-purple-500 mr-2"></i>Android & iOS</li>
+                        <li><i class="fas fa-check text-purple-500 mr-2"></i>Apps de Gestión</li>
+                        <li><i class="fas fa-check text-purple-500 mr-2"></i>Apps de Servicio</li>
+                    </ul>
+                </div>
+
+                <!-- Desktop & Software -->
+                <div class="group bg-gray-800/50 p-8 rounded-2xl border border-gray-700 hover:bg-gray-800 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-green-900/50 rounded-lg flex items-center justify-center mb-6 text-green-400 group-hover:text-green-300">
+                        <i class="fas fa-desktop text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Software a Medida</h3>
+                    <p class="text-gray-400 text-sm mb-4">Aplicaciones de escritorio y herramientas personalizadas para optimizar los procesos de tu negocio.</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Windows / Mac / Linux</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Automatización</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i>Gestión de Bases de Datos</li>
+                    </ul>
+                </div>
+
+                <!-- Games -->
+                <div class="group bg-gray-800/50 p-8 rounded-2xl border border-gray-700 hover:bg-gray-800 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-red-900/50 rounded-lg flex items-center justify-center mb-6 text-red-400 group-hover:text-red-300">
+                        <i class="fas fa-gamepad text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Videojuegos</h3>
+                    <p class="text-gray-400 text-sm mb-4">Creación de experiencias interactivas y videojuegos para móviles o PC, desde conceptos simples hasta complejos.</p>
+                </div>
+
+                <!-- General Programming -->
+                <div class="group bg-gray-800/50 p-8 rounded-2xl border border-gray-700 hover:bg-gray-800 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-yellow-900/50 rounded-lg flex items-center justify-center mb-6 text-yellow-400 group-hover:text-yellow-300">
+                        <i class="fas fa-terminal text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Programación General</h3>
+                    <p class="text-gray-400 text-sm mb-4">Solución de problemas algorítmicos, scripts, mantenimiento de código y consultoría técnica.</p>
+                </div>
+
+                <!-- Custom Tools -->
+                <div class="group bg-gray-800/50 p-8 rounded-2xl border border-gray-700 hover:bg-gray-800 transition-all hover:-translate-y-1">
+                    <div class="w-12 h-12 bg-cyan-900/50 rounded-lg flex items-center justify-center mb-6 text-cyan-400 group-hover:text-cyan-300">
+                        <i class="fas fa-tools text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-3">Herramientas</h3>
+                    <p class="text-gray-400 text-sm mb-4">Desarrollo de utilidades específicas para resolver necesidades puntuales de tu flujo de trabajo.</p>
                 </div>
             </div>
-            <div class="mb-4">
-                <h4 class="text-xl font-bold text:white mb-3">Comprar Tokens</h4>
-                <p class="text-gray-400 text-sm mb-4">Selecciona uno de los paquetes disponibles para recargar tu saldo. Esta compra es simulada, no se realizan cobros reales.</p>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="proceso" class="py-20 bg-gray-800/30 border-y border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-white">Sistema de Trabajo</h2>
+                <p class="mt-4 text-gray-400">Transparencia y confianza en cada etapa del proyecto.</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="token-package" onclick="Wallet.buyTokens(100, 1)">
-                    <div class="token-package-content">
-                        <div>
-                            <p class="text:white font-bold text-xl">100 Tokens</p>
-                            <p class="text-gray-400 text-sm">Paquete Básico</p>
-                        </div>
-                        <p class="text-green-400 font-bold text-2xl">$1</p>
-                    </div>
-                </div>
 
-                <div class="token-package" onclick="Wallet.buyTokens(500, 5)">
-                    <div class="token-package-content">
-                        <div>
-                            <p class="text:white font-bold text-xl">500 Tokens</p>
-                            <p class="text-gray-400 text-sm">Paquete Popular</p>
-                        </div>
-                        <p class="text-green-400 font-bold text-2xl">$5</p>
-                    </div>
-                </div>
+            <div class="relative">
+                <!-- Line for desktop -->
+                <div class="hidden md:block absolute top-1/2 left-0 w-full h-1 bg-gray-700 -translate-y-1/2 z-0"></div>
 
-                <div class="token-package token-package-featured" onclick="Wallet.buyTokens(1000, 10)">
-                    <div class="featured-badge">⭐ Mejor Valor</div>
-                    <div class="token-package-content">
-                        <div>
-                            <p class="text:white font-bold text-xl">1,000 Tokens</p>
-                            <p class="text-purple-400 text-sm">Ahorra 20%</p>
-                        </div>
-                        <p class="text-green-400 font-bold text-2xl">$10</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-10 relative z-10">
+                    <!-- Phase 1 -->
+                    <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 text-center transform hover:scale-105 transition-transform">
+                        <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 border-4 border-gray-900">30%</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Inicio</h3>
+                        <p class="text-gray-400 text-sm">Al aceptar el proyecto. Definición de requerimientos y planificación inicial.</p>
                     </div>
-                </div>
 
-                <div class="token-package" onclick="Wallet.buyTokens(5000, 50)">
-                    <div class="token-package-content">
-                        <div>
-                            <p class="text:white font-bold text-xl">5,000 Tokens</p>
-                            <p class="text-gray-400 text-sm">Paquete Premium</p>
-                        </div>
-                        <p class="text-green-400 font-bold text-2xl">$50</p>
+                    <!-- Phase 2 -->
+                    <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 text-center transform hover:scale-105 transition-transform">
+                        <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 border-4 border-gray-900">40%</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Avance</h3>
+                        <p class="text-gray-400 text-sm">Al mostrar una versión funcional (MVP) o avances significativos del desarrollo.</p>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div class="bg-gray-900 p-6 rounded-xl border border-gray-700 text-center transform hover:scale-105 transition-transform">
+                        <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4 border-4 border-gray-900">30%</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Entrega</h3>
+                        <p class="text-gray-400 text-sm">Al finalizar el proyecto, realizar pruebas finales y entregar el producto terminado.</p>
                     </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Daily Rewards Section -->
-        <div id="dailyRewardsSection" class="hidden">
-            <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <h3 class="text-2xl font-bold text:white mb-1">Recompensas diarias</h3>
-                    <p class="text-gray-400 text-sm max-w-xl">
-                        Reclama tu recompensa diaria de inicio de sesión. Mantén tu racha activa para ganar más tokens cada semana.
-                    </p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Recompensa de hoy -->
-                <div class="glass-effect rounded-2xl p-6 flex flex-col justify-between">
-                    <div>
-                        <p class="text-sm text-gray-400 uppercase tracking-wide mb-1">Recompensa de hoy</p>
-                        <p class="text-4xl font-black text-yellow-400 mb-1" id="drTodayAmount">--</p>
-                        <p class="text-xs text-gray-500" id="drTodayLabel">Tokens disponibles hoy</p>
-                    </div>
-                    <div class="mt-4 space-y-2">
-                        <button id="drClaimBtn" onclick="DailyRewards.claimToday()" class="w-full btn-primary text:white py-3 rounded-lg font-semibold">
-                            Reclamar ahora
-                        </button>
-                        <p id="drClaimStatus" class="text-xs text-gray-400"></p>
-                    </div>
-                </div>
-
-                <!-- Racha del jugador -->
-                <div class="glass-effect rounded-2xl p-6 flex flex-col justify-between">
-                    <div>
-                        <p class="text-sm text-gray-400 uppercase tracking-wide mb-1">Tu progreso</p>
-                        <p class="text-lg font-bold text:white" id="drStreakCurrent">Racha actual: 0 días</p>
-                        <p class="text-sm text-gray-400" id="drStreakBest">Mejor racha: 0 días</p>
-                    </div>
-                    <div class="mt-4">
-                        <p class="text-xs text-gray-400 mb-1">Tokens ganados por recompensas diarias:</p>
-                        <p class="text-2xl font-black text-green-400" id="drTotalEarned">0</p>
-                    </div>
-                </div>
-
-                <!-- Vista semanal -->
-                <div class="glass-effect rounded-2xl p-6 flex flex-col">
-                    <p class="text-sm text-gray-400 uppercase tracking-wide mb-3">Calendario semanal</p>
-                    <p class="text-xs text-gray-500 mb-3">
-                        Ve las recompensas configuradas para cada día de la semana y el estado de tus reclamaciones.
-                    </p>
-                    <div id="drWeekGrid" class="grid grid-cols-7 gap-2 text-center text-xs"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Events Section -->
-        <div id="eventsSection" class="hidden">
-            <div class="mb-6">
-                <h3 class="text-2xl font-bold text:white mb-2">Eventos</h3>
-                <p class="text-gray-400 text-sm max-w-xl">
-                    Participa en eventos temporales para ganar tokens y recompensas especiales. Muy pronto verás aquí los eventos globales activos de Studio Lexair.
+    <!-- Pricing Section -->
+    <section id="precios" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-bold text-white">Precios Estimados</h2>
+                <p class="mt-4 text-gray-400 max-w-2xl mx-auto">
+                    Los precios pueden variar según la complejidad, urgencia y requerimientos específicos.
                 </p>
             </div>
-            <div class="glass-effect rounded-2xl p-6 text-center">
-                <svg class="w-12 h-12 text-purple-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-                <h4 class="text-xl font-bold text:white mb-2">Próximamente</h4>
-                <p class="text-gray-400 text-sm max-w-xl mx-auto">
-                    Estamos preparando un sistema de eventos globales donde podrás completar misiones, usar contenido destacado y reclamar recompensas limitadas.
-                </p>
-            </div>
-        </div>
 
-        <!-- Guest Message -->
-        <div id="guestMessage" class="text-center py-20">
-            <svg class="w-24 h-24 mx-auto text-purple-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
-            <h3 class="text-2xl font-bold text:white mb-2">Inicia Sesión para Continuar</h3>
-            <p class="text-gray-400 mb-6">Regístrate o inicia sesión para acceder a la tienda del launcher</p>
-            <button id="btnGuestRegister" class="btn-primary text:white px-8 py-3 rounded-lg font-semibold text-lg">
-                Comenzar Ahora
-            </button>
-        </div>
-
-        <!-- Preguntas Frecuentes (FAQ) -->
-        <section class="max-w-3xl mx-auto mt-10 mb-10">
-            <h2 class="text-3xl font-bold text-white mb-6 text-center">Preguntas Frecuentes</h2>
-            <p class="text-gray-400 text-sm mb-6 text-center max-w-2xl mx-auto">
-                Resolvemos algunas dudas rápidas sobre cómo funciona Studio Lexair, los tokens y los dispositivos compatibles.
-            </p>
-            <div class="space-y-3">
-                <!-- FAQ 1 -->
-                <details class="glass-effect rounded-2xl p-4">
-                    <summary class="cursor-pointer flex items-center justify-between text-white font-semibold">
-                        <span>¿Qué son los tokens?</span>
-                        <span class="ml-3 text-purple-300 text-sm">Ver más</span>
-                    </summary>
-                    <div class="mt-3 text-gray-300 text-sm">
-                        <p>
-                            Los tokens son la moneda virtual de Studio Lexair. Los consigues usando el launcher, reclamando recompensas diarias y completando misiones. 
-                            Puedes usarlos para desbloquear juegos, aplicaciones, herramientas y participar en eventos especiales.
-                        </p>
-                    </div>
-                </details>
-
-                <!-- FAQ 2 -->
-                <details class="glass-effect rounded-2xl p-4">
-                    <summary class="cursor-pointer flex items-center justify-between text-white font-semibold">
-                        <span>¿Es gratis usar Studio Lexair?</span>
-                        <span class="ml-3 text-purple-300 text-sm">Ver más</span>
-                    </summary>
-                    <div class="mt-3 text-gray-300 text-sm">
-                        <p>
-                            Sí. Crear tu cuenta y usar el launcher es totalmente gratis. Algunos contenidos pueden requerir tokens para desbloquearse, 
-                            pero puedes obtener muchos tokens simplemente utilizando la plataforma, sin gastar dinero real.
-                        </p>
-                    </div>
-                </details>
-
-                <!-- FAQ 3 -->
-                <details class="glass-effect rounded-2xl p-4">
-                    <summary class="cursor-pointer flex items-center justify-between text-white font-semibold">
-                        <span>¿En qué dispositivos funciona?</span>
-                        <span class="ml-3 text-purple-300 text-sm">Ver más</span>
-                    </summary>
-                    <div class="mt-3 text-gray-300 text-sm">
-                        <p>
-                            Studio Lexair funciona en cualquier dispositivo con un navegador moderno: PC, portátiles, tablets y móviles Android o iOS. 
-                            Solo necesitas conexión a Internet y un navegador actualizado (como Chrome, Edge, Firefox o Safari).
-                        </p>
-                    </div>
-                </details>
-
-                <!-- FAQ 4 -->
-                <details class="glass-effect rounded-2xl p-4">
-                    <summary class="cursor-pointer flex items-center justify-between text-white font-semibold">
-                        <span>¿Mis datos están seguros?</span>
-                        <span class="ml-3 text-purple-300 text-sm">Ver más</span>
-                    </summary>
-                    <div class="mt-3 text-gray-300 text-sm">
-                        <p>
-                            Sí. Tus datos se almacenan en servidores seguros y el acceso se gestiona mediante Supabase con autenticación moderna. 
-                            Nunca compartimos tu correo ni tu información personal con terceros, y solo se usa dentro del ecosistema Studio Lexair.
-                        </p>
-                    </div>
-                </details>
-
-                <!-- FAQ 5 -->
-                <details class="glass-effect rounded-2xl p-4">
-                    <summary class="cursor-pointer flex items-center justify-between text-white font-semibold">
-                        <span>¿Necesito descargar algo?</span>
-                        <span class="ml-3 text-purple-300 text-sm">Ver más</span>
-                    </summary>
-                    <div class="mt-3 text-gray-300 text-sm">
-                        <p>
-                            No. Studio Lexair funciona directamente en tu navegador como una aplicación web. 
-                            Puedes usarlo desde PC, móvil o tablet sin instalar nada adicional, y en muchos dispositivos también puedes añadirlo como acceso directo a tu pantalla de inicio.
-                        </p>
-                    </div>
-                </details>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer con Estadísticas -->
-    <footer class="border-t border-purple-500 border-opacity-30 mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <!-- Estadísticas en Tiempo Real -->
-            <div class="mb-12">
-                <h3 class="text-2xl font-bold text:white text-center mb-8">Estadísticas en Tiempo Real</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 justify-items-center">
-                    <!-- Usuarios Totales -->
-                    <div class="glass-effect rounded-xl p-6 transform hover:scale-105 transition-all duration-300">
-                        <div class="flex justify-center mb-3">
-                            <svg class="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
-                        </div>
-                        <div class="text-3xl font-bold text:white mb-1 text-center" id="totalUsers">
-                            <span class="animate-pulse">---</span>
-                        </div>
-                        <div class="text-xs text-gray-400 uppercase tracking-wide text-center">Usuarios Registrados</div>
-                    </div>
-                    
-                    <!-- Contenido Disponible -->
-                    <div class="glass-effect rounded-xl p-6 transform hover:scale-105 transition-all duration-300">
-                        <div class="flex justify-center mb-3">
-                            <svg class="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/>
-                            </svg>
-                        </div>
-                        <div class="text-3xl font-bold text-purple-400 mb-1 text-center" id="totalGames">
-                            <span class="animate-pulse">---</span>
-                        </div>
-                        <div class="text-xs text-gray-400 uppercase tracking-wide text-center">Elementos Disponibles</div>
-                    </div>
-                    
-                    <!-- Tokens en Circulación -->
-                    <div class="glass-effect rounded-xl p-6 transform hover:scale-105 transition-all duration-300">
-                        <div class="flex justify-center mb-3">
-                            <svg class="w-12 h-12 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <div class="text-3xl font-bold text-yellow-400 mb-1 text-center" id="totalTokens">
-                            <span class="animate-pulse">---</span>
-                        </div>
-                        <div class="text-xs text-gray-400 uppercase tracking-wide text-center">Tokens en Circulación</div>
-                    </div>
+            <!-- Toggle Switch -->
+            <div class="flex justify-center mb-12">
+                <div class="bg-gray-800 p-1 rounded-lg inline-flex relative">
+                    <div id="toggle-bg" class="w-1/2 h-full absolute top-0 left-0 bg-blue-600 rounded-md transition-all duration-300"></div>
+                    <button onclick="setPricing('cuba')" class="relative z-10 px-6 py-2 text-sm font-medium text-white transition-colors focus:outline-none w-32">
+                        Cuba
+                    </button>
+                    <button onclick="setPricing('international')" class="relative z-10 px-6 py-2 text-sm font-medium text-white transition-colors focus:outline-none w-32">
+                        Internacional
+                    </button>
                 </div>
             </div>
 
-            <!-- Footer Info -->
-            <div class="border-t border-gray-700 pt-8 text-center">
-                <p class="text-gray-400 mb-2">© 2024 Studio Lexair. Todos los derechos reservados.</p>
-                <p class="text-purple-400 text-sm">Creado con ❤️ por <span class="font-bold">Airien Yolexis Rojas Roque</span></p>
+            <!-- Pricing Tables Container -->
+            <div id="pricing-container">
+                <!-- Content will be injected by JS -->
+            </div>
+
+            <!-- Factors -->
+            <div class="mt-16 bg-gray-800/50 rounded-2xl p-8 border border-gray-700">
+                <h3 class="text-xl font-bold text-center mb-6">¿Qué define el precio final?</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold text-red-400 mb-3 flex items-center"><i class="fas fa-arrow-up mr-2"></i>Factores que suben el precio</h4>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li>• Urgencia en la entrega</li>
+                            <li>• Funcionalidades complejas o muchas funciones</li>
+                            <li>• Diseño 100% personalizado desde cero</li>
+                            <li>• Integraciones con servicios externos (APIs)</li>
+                            <li>• Planes de mantenimiento extendido</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-green-400 mb-3 flex items-center"><i class="fas fa-arrow-down mr-2"></i>Factores que bajan el precio</h4>
+                        <ul class="space-y-2 text-gray-400 text-sm">
+                            <li>• Cliente recurrente</li>
+                            <li>• Proyectos simples o minimalistas</li>
+                            <li>• Uso de plantillas o componentes prefabricados</li>
+                            <li>• Plazos de entrega flexibles</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="mt-6 text-center pt-6 border-t border-gray-700">
+                    <p class="font-mono text-blue-300">PRECIO = (Horas estimadas × Tarifa) + Complejidad + Urgencia</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contacto" class="py-20 bg-gray-800/30 border-t border-gray-800">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-white mb-8">Hablemos de tu Proyecto</h2>
+            <div class="bg-gray-900 p-8 rounded-2xl border border-gray-700 shadow-2xl">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="text-left space-y-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center text-blue-500">
+                                <i class="fas fa-envelope text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Email</p>
+                                <a href="mailto:studio.lexair@gmail.com" class="text-lg font-semibold hover:text-blue-400 transition-colors">studio.lexair@gmail.com</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-green-900/30 rounded-full flex items-center justify-center text-green-500">
+                                <i class="fab fa-whatsapp text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Teléfono / WhatsApp</p>
+                                <a href="https://wa.me/5352678747" class="text-lg font-semibold hover:text-green-400 transition-colors">+53 52678747</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-purple-900/30 rounded-full flex items-center justify-center text-purple-500">
+                                <i class="fas fa-map-marker-alt text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Ubicación</p>
+                                <p class="text-lg font-semibold">Santa Clara, Villa Clara, Cuba</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700">
+                        <p class="text-gray-300 mb-6">"¿Tienes una idea en mente? No dudes en contactarme para una cotización gratuita. Estoy listo para empezar."</p>
+                        <a href="mailto:studio.lexair@gmail.com" class="block w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition-colors">
+                            Enviar Mensaje
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-gray-400 text-sm">
+                &copy; <span id="year"></span> Studio Lexair. Todos los derechos reservados.
+            </div>
+            <div class="flex space-x-6">
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i class="fab fa-facebook fa-lg"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="#" class="text-gray-500 hover:text-white transition-colors"><i class="fab fa-linkedin fa-lg"></i></a>
             </div>
         </div>
     </footer>
 
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="fixed inset-0 bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 z-50 flex items-center justify-center">
-        <div class="text-center">
-            <div class="relative mb-8">
-                <div class="w-32 h-32 border-8 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <span class="text:white font-bold text-4xl logo-font">SL</span>
-                </div>
-            </div>
-            <h2 class="text:white text-3xl font-bold logo-font mb-2 animate-pulse">Studio Lexair</h2>
-            <p class="text-purple-300 text-sm">Cargando experiencia del launcher...</p>
-            <div class="mt-6 w-64 h-2 bg-gray-700 rounded-full mx-auto overflow-hidden">
-                <div id="loadingBar" class="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-300" style="width: 0%"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modals Container -->
-    <div id="modalsContainer">
-        
-        <!-- Login Modal -->
-        <div id="loginModal" class="modal hidden">
-            <div class="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-purple-500 border-opacity-30 glass-effect animate-slide-up">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text:white">Iniciar Sesión</h3>
-                    <button onclick="UI.closeModal('loginModal')" class="text-gray-400 hover:text:white transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <form id="loginForm" class="space-y-4">
-                    <div>
-                        <label class="block text-gray-300 mb-2">Email</label>
-                        <input type="email" id="loginEmail" required
-                               class="w-full px-4 py-3 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 transition">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-gray-300 mb-2">Contraseña</label>
-                        <input type="password" id="loginPassword" required
-                               class="w-full px-4 py-3 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 transition">
-                    </div>
-                    
-                    <button type="submit" id="btnLogin" class="w-full btn-primary text:white py-3 rounded-lg font-semibold">
-                        Iniciar Sesión
-                    </button>
-                </form>
-                
-                <div class="mt-6 text-center">
-                    <button onclick="UI.showModal('resetPasswordModal'); UI.closeModal('loginModal')" class="text-purple-400 hover:text-purple-300 text-sm">
-                        ¿Olvidaste tu contraseña?
-                    </button>
-                    <p class="text-gray-500 text-sm mt-4">
-                        ¿No tienes cuenta? 
-                        <button onclick="UI.showModal('registerModal'); UI.closeModal('loginModal')" class="text-purple-400 hover:text-purple-300">
-                            Regístrate aquí
-                        </button>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Register Modal -->
-        <div id="registerModal" class="modal hidden">
-            <div class="bg-gray-900 rounded-2xl p-8 max-w-2xl w-full mx-4 border border-purple-500 border-opacity-30 glass-effect max-h-[90vh] overflow-y-auto animate-slide-up">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text:white">Crear Cuenta</h3>
-                    <button onclick="UI.closeModal('registerModal')" class="text-gray-400 hover:text:white transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <form id="registerForm" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-gray-300 mb-2">Nombre Completo *</label>
-                            <input type="text" id="regFullName" required
-                                   class="w-full px-4 py-3 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 transition">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-gray-300 mb-2">Nombre de Usuario *</label>
-                            <input type="text" id="regUsername" required
-                                   class="w-full px-4 py-3 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 transition">
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-gray-300 mb-2">Email *</label>
-                        <input type="email" id="regEmail" required
-                               class="w-full px-4 py-3 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 transition">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-gray-300 mb-2">Contraseña *</label>
-                        <div class="relative">
-                            <input type="password" id="regPassword" required
-                                   class="w-full px-4 py-3 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 transition">
-                            <button type="button" onclick="UI.togglePassword('regPassword')" 
-                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text:white">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                            </button>
-                        </div>
-                        <div id="passwordStrength" class="mt-2 h-1 bg-gray-700 rounded-full overflow-hidden hidden">
-                            <div id="passwordStrengthBar" class="h-full transition-all"></div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-gray-300 mb-2">Fecha de Nacimiento *</label>
-                        <input type="date" id="regBirthdate" required
-                               class="w-full px-4 py-3 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 transition">
-                    </div>
-                    
-                    <!-- Honeypot -->
-                    <input type="text" id="regWebsite" class="hidden" tabindex="-1" autocomplete="off">
-                    
-                    <div class="flex items-center space-x-2">
-                        <input type="checkbox" id="regNewsletter" class="w-4 h-4 bg-gray-800 border-gray-700 rounded">
-                        <label for="regNewsletter" class="text-gray-300 text-sm">Quiero recibir noticias y ofertas</label>
-                    </div>
-                    
-                    <div class="flex items-start space-x-2">
-                        <input type="checkbox" id="regTerms" required class="w-4 h-4 bg-gray-800 border-gray-700 rounded mt-1">
-                        <label for="regTerms" class="text-gray-300 text-sm">Acepto los términos y condiciones *</label>
-                    </div>
-                    
-                    <div class="bg-gray-800 p-4 rounded-lg">
-                        <label class="block text-gray-300 mb-2">Verificación Anti-Bot *</label>
-                        <div class="flex items-center space-x-4">
-                            <span id="captchaQuestion" class="text:white font-bold"></span>
-                            <input type="number" id="captchaAnswer" required
-                                   class="w-24 px-4 py-2 bg-gray-700 text:white rounded-lg border border-gray-600">
-                            <button type="button" onclick="UI.generateCaptcha()" class="text-purple-400 hover:text-purple-300">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" id="btnRegister" class="w-full btn-primary text:white py-3 rounded-lg font-semibold">
-                        Crear Cuenta
-                    </button>
-                </form>
-                
-                <p class="text-gray-500 text-sm text-center mt-4">
-                    ¿Ya tienes cuenta? 
-                    <button onclick="UI.showModal('loginModal'); UI.closeModal('registerModal')" class="text-purple-400 hover:text-purple-300">
-                        Inicia sesión
-                    </button>
-                </p>
-            </div>
-        </div>
-
-        <!-- Reset Password Modal -->
-        <div id="resetPasswordModal" class="modal hidden">
-            <div class="bg-gray-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-purple-500 border-opacity-30 glass-effect animate-slide-up">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-bold text:white">Recuperar Contraseña</h3>
-                    <button onclick="UI.closeModal('resetPasswordModal')" class="text-gray-400 hover:text:white transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-                
-                <p class="text-gray-300 mb-6">Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña.</p>
-                
-                <form id="resetPasswordForm" class="space-y-4">
-                    <div>
-                        <label class="block text-gray-300 mb-2">Email</label>
-                        <input type="email" id="resetEmail" required
-                               class="w-full px-4 py-3 bg-gray-800 text:white rounded-lg border border-gray-700 focus:border-purple-500 transition">
-                    </div>
-                    
-                    <button type="submit" id="btnResetPassword" class="w-full btn-primary text:white py-3 rounded-lg font-semibold">
-                        Enviar Enlace
-                    </button>
-                </form>
-                
-                <p class="text-gray-500 text-sm text-center mt-4">
-                    <button onclick="UI.showModal('loginModal'); UI.closeModal('resetPasswordModal')" class="text-purple-400 hover:text-purple-300">
-                        Volver al login
-                    </button>
-                </p>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Game Details Modal -->
-    <div id="gameDetailsModal" class="modal hidden">
-        <div class="bg-gray-900 rounded-2xl p-6 max-w-3xl w-full mx-4 border border-purple-500 border-opacity-30 glass-effect animate-slide-up overflow-y-auto max-h-[90vh]">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h3 id="gdTitle" class="text-2xl font-bold text-white mb-1">Título del juego</h3>
-                    <p id="gdCategory" class="text-sm text-gray-400"></p>
-                    <div id="gdBadges" class="flex flex-wrap gap-2 mt-2"></div>
-                </div>
-                <button onclick="UI.closeModal('gameDetailsModal')" class="text-gray-400 hover:text-white transition">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="space-y-4">
-                <div class="w-full rounded-xl overflow-hidden">
-                    <img id="gdImage" src="https://via.placeholder.com/800x400?text=Game" alt="Juego" loading="lazy" class="w-full h-56 md:h-72 object-cover">
-                </div>
-                <div class="flex flex-col md:flex-row md:space-x-6">
-                    <div class="flex-1 mb-4 md:mb-0">
-                        <h4 class="text-sm font-semibold text-gray-300 mb-1">Descripción</h4>
-                        <p id="gdDescription" class="text-sm text-gray-300 leading-relaxed">
-                            Sin descripción.
-                        </p>
-                    </div>
-                    <div class="w-full md:w-60 space-y-3">
-                        <div class="glass-effect rounded-xl p-3">
-                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Estado</p>
-                            <p id="gdOwnership" class="text-sm font-semibold text-white">No adquirido</p>
-                        </div>
-                        <div class="glass-effect rounded-xl p-3">
-                            <p class="text-xs text-gray-400 uppercase tracking-wide mb-1">Precio</p>
-                            <p id="gdPriceLabel" class="text-sm font-semibold text-green-400">GRATIS</p>
-                            <p class="text-xs text-gray-500 mt-1">Tokens requeridos: <span id="gdPriceTokens">0</span></p>
-                        </div>
-                        <button id="gdPlayButton" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-2 rounded-lg font-semibold transition">
-                            Jugar ahora
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notifications Container -->
-    <div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-3 max-w-md">
-        <!-- Toasts will be inserted here dynamically -->
-    </div>
-
-    <!-- Daily Reward Floating Gift: centro (animación inicial) -->
-    <div id="dailyRewardCenter" class="hidden fixed inset-0 z-40 flex items-center justify-center pointer-events-none">
-        <div class="glass-effect rounded-3xl p-6 flex flex-col items-center justify-center bg-purple-900/60 shadow-2xl bounce">
-            <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-pink-500 rounded-2xl flex items-center justify-center mb-3">
-                <svg class="w-10 h-10 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16 0V9a2 2 0 00-2-2h-3m5 5H4m0 0V9a2 2 0 012-2h3m3-4l2.121 2.121A1.5 1.5 0 0114.5 7.5H9.5A1.5 1.5 0 018.379 5.121L10.5 3m3 0L12 5.5"/>
-                </svg>
-            </div>
-            <p class="text:white font-semibold text-sm">¡Tienes una recompensa diaria disponible!</p>
-        </div>
-    </div>
-
-    <!-- Daily Reward Floating Gift: botón en esquina inferior izquierda -->
-    <button id="dailyRewardFab" onclick="DailyRewards.openPanel()" class="hidden fixed bottom-5 left-5 z-40 glass-effect rounded-full p-3 flex items-center space-x-2 shadow-lg hover:shadow-2xl transition">
-        <div class="w-9 h-9 bg-gradient-to-br from-yellow-400 to-pink-500 rounded-2xl flex items-center justify-center">
-            <svg class="w-6 h-6 text:white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7m16 0V9a2 2 0 00-2-2h-3m5 5H4m0 0V9a2 2 0 012-2h3m3-4l2.121 2.121A1.5 1.5 0 0114.5 7.5H9.5A1.5 1.5 0 018.379 5.121L10.5 3m3 0L12 5.5"/>
-            </svg>
-        </div>
-        <span class="hidden sm:inline text-xs font-semibold text:white">Recompensa diaria</span>
-    </button>
-
-    <!-- Scripts -->
-    <script src="js/config.js"></script>
-    <script src="js/modals.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/wallet.js"></script>
-    <script src="js/launcherEngine.js"></script>
-    <script src="js/store.js"></script>
-    <script src="js/dailyRewards.js"></script>
-    <script src="js/events.js"></script>
-    <script src="js/missions.js"></script>
-    <script src="js/stats.js"></script>
-    <script src="js/main.js"></script>
-
-    <!-- Inline base script -->
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        console.log('Studio Lexair Launcher base HTML cargado');
-      });
-    </script>
+        // Update Year
+        document.getElementById('year').textContent = new Date().getFullYear();
 
+        // Mobile Menu
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Pricing Data
+        const pricingData = {
+            cuba: [
+                { title: "Landing Page Simple", priceCUP: "1,500 - 3,000 CUP", priceUSD: "$15 - $40 USD" },
+                { title: "Página Web Completa", priceCUP: "5,000 - 15,000 CUP", priceUSD: "$50 - $150 USD" },
+                { title: "Tienda Online", priceCUP: "10,000 - 25,000 CUP", priceUSD: "$100 - $250 USD" },
+                { title: "App Móvil Simple", priceCUP: "15,000 - 30,000 CUP", priceUSD: "$150 - $350 USD" },
+                { title: "Software / Herramienta", priceCUP: "10,000 - 50,000 CUP", priceUSD: "$100 - $500 USD" },
+            ],
+            international: [
+                { title: "Landing Page Simple", price: "$50 - $100 USD" },
+                { title: "Página Web Completa", price: "$150 - $300 USD" },
+                { title: "Tienda Online", price: "$300 - $500 USD" },
+                { title: "App Móvil Simple", price: "$400 - $800 USD" },
+                { title: "App Compleja", price: "$800 - $2000+ USD" },
+                { title: "Juego Simple", price: "$300 - $600 USD" },
+                { title: "Software / Herramienta", price: "$200 - $1500+ USD" },
+            ]
+        };
+
+        const container = document.getElementById('pricing-container');
+        const toggleBg = document.getElementById('toggle-bg');
+
+        function setPricing(region) {
+            let html = '';
+            
+            // Animation for toggle
+            if (region === 'cuba') {
+                toggleBg.style.transform = 'translateX(0)';
+            } else {
+                toggleBg.style.transform = 'translateX(100%)';
+            }
+
+            if (region === 'cuba') {
+                html = `<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                pricingData.cuba.forEach(item => {
+                    html += `
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-blue-500 transition-colors">
+                            <h4 class="text-lg font-bold text-white mb-4">${item.title}</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center border-b border-gray-700 pb-2">
+                                    <span class="text-gray-400 text-sm">CUP</span>
+                                    <span class="font-bold text-blue-400">${item.priceCUP}</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400 text-sm">MLC/USD</span>
+                                    <span class="font-bold text-green-400">${item.priceUSD}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            } else {
+                html = `<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                pricingData.international.forEach(item => {
+                    html += `
+                        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 hover:border-purple-500 transition-colors">
+                            <h4 class="text-lg font-bold text-white mb-4">${item.title}</h4>
+                            <div class="flex justify-between items-center pt-2">
+                                <span class="text-gray-400 text-sm">Precio Est.</span>
+                                <span class="font-bold text-purple-400 text-xl">${item.price}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Initialize
+        setPricing('cuba');
+
+    </script>
 </body>
 </html>
